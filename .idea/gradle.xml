@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/backend/mobile-leetnote-backend" />
+        <option name="gradleJvm" value="24" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/backend/mobile-leetnote-backend" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/frontend/mobile-leetnode-frontend" />
+        <option name="gradleJvm" value="valhalla-ea-23" />
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>
