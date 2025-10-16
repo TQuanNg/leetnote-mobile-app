@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">LeetNote</string>
+    <string name="filter">Filter</string>
+    <string name="difficulty">Difficulty</string>
+    <string name="difficulty_easy">Easy</string>
+    <string name="difficulty_medium">Medium</string>
+    <string name="difficulty_hard">Hard</string>
+    <string name="status_solved">Solved</string>
+    <string name="status_unsolved">Unsolved</string>
+    <string name="status_favorite">Favorite</string>
+    <string name="apply_filters">Apply Filters</string>
+    <string name="get_started">Get Started</string>
+    <string name="next">Next</string>
+    <string name="close">Close</string>
+    <string name="issue">Issue</string>
+    <string name="feedback">Feedback</string>
+    <string name="web_client_id">23113530469-ue4dcka3kfoiv100k71rcds1ov7jgiia.apps.googleusercontent.com</string>
+</resources>

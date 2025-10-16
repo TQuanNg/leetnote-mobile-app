@@ -1,0 +1,8 @@
+{
+  "approach": "Hash Map (One Pass) - Store each number and its index in a hash map while checking if the complement (target - current number) already exists in the map. This allows us to find the pair in a single pass through the array.",
+  "code": "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        Map<Integer, Integer> map = new HashMap<>();\n        \n        for (int i = 0; i < nums.length; i++) {\n            int complement = target - nums[i];\n            \n            if (map.containsKey(complement)) {\n                return new int[] {map.get(complement), i};\n            }\n            \n            map.put(nums[i], i);\n        }\n        \n        // Should never reach here if valid solution exists\n        throw new IllegalArgumentException(\"No two sum solution\");\n    }\n}",
+  "complexity": {
+    "time": "O(n) - Single pass through the array of n elements",
+    "space": "O(n) - Hash map can store up to n elements in worst case"
+  }
+}
