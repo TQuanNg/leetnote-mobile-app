@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
@@ -29,8 +28,7 @@ public class UserServiceTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
-
+        // MockitoExtension already initializes @Mock/@InjectMocks. Avoid double-initialization.
         user = new User();
         user.setId(1L);
         user.setEmail("test@example.com");

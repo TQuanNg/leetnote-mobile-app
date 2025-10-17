@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,6 +23,7 @@ public class UserRepositoryTest {
         User user = new User();
         user.setEmail("test@example.com");
         user.setFirebaseUid("firebase123");
+        user.setCreatedAt(LocalDateTime.now());
         user = userRepository.save(user);
 
         Optional<User> found = userRepository.findById(user.getId());
@@ -34,6 +36,7 @@ public class UserRepositoryTest {
         User user = new User();
         user.setEmail("unique@example.com");
         user.setFirebaseUid("firebase456");
+        user.setCreatedAt(LocalDateTime.now());
         userRepository.save(user);
 
         Optional<User> found = userRepository.findByEmail("unique@example.com");
@@ -46,6 +49,7 @@ public class UserRepositoryTest {
         User user = new User();
         user.setEmail("another@example.com");
         user.setFirebaseUid("firebase789");
+        user.setCreatedAt(LocalDateTime.now());
         userRepository.save(user);
 
         Optional<User> found = userRepository.findByFirebaseUid("firebase789");
