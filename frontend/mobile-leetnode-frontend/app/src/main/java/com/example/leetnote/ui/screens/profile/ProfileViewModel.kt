@@ -1,17 +1,15 @@
 package com.example.leetnote.ui.screens.profile
 
-import android.content.Context
-import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.leetnote.data.repository.UserRepository
+import com.example.leetnote.data.repository.LeetcodeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.io.File
 import javax.inject.Inject
 
 data class ProfileUiState(
@@ -21,12 +19,19 @@ data class ProfileUiState(
     val level: Int = 0,
     val progress: Float = 0f,
     val leetcodeUsername: String? = null,
-    val solvedCount: Int? = null
+    val solvedCount: Int? = null,
+    val solvedEasy: Int? = null,
+    val solvedMedium: Int? = null,
+    val solvedHard: Int? = null,
+    val easyTotal: Int? = 907,
+    val mediumTotal: Int? = 1933,
+    val hardTotal: Int? = 876,
 )
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val leetcodeRepository: LeetcodeRepository
 ): ViewModel() {
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
@@ -115,15 +120,35 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    /** Example: connect LeetCode username */
+    /** Connect and fetch LeetCode stats */
     fun connectLeetCode(username: String) {
-        _uiState.update { it.copy(leetcodeUsername = username, solvedCount = 0) }
-    }
-
-    fun Uri.toFile(context: Context): File {
-        val inputStream = context.contentResolver.openInputStream(this)!!
-        val tempFile = File.createTempFile("upload", ".jpg", context.cacheDir)
-        inputStream.use { input -> tempFile.outputStream().use { output -> input.copyTo(output) } }
-        return tempFile
+        if (username.isBlank()) {
+            _error.value = "LeetCode username can't be empty"
+            return
+        }
+        viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
+            try {
+                val stats = leetcodeRepository.getUserStats(username)
+                if (stats == null) {
+                    _error.value = "Failed to fetch LeetCode stats"
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            leetcodeUsername = stats.username,
+                            solvedCount = stats.totalSolved,
+                            solvedEasy = stats.easySolved,
+                            solvedMedium = stats.mediumSolved,
+                            solvedHard = stats.hardSolved,
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                _error.value = e.message
+            } finally {
+                _isLoading.value = false
+            }
+        }
     }
 }

@@ -2,8 +2,8 @@ package com.example.leetnote_backend.service;
 
 import com.example.leetnote_backend.model.DTO.GraphQLResponse;
 import com.example.leetnote_backend.model.DTO.LeetcodeStatsDTO;
-import jakarta.persistence.Cacheable;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -17,7 +17,7 @@ public class LeetcodeService {
     private final RestTemplate restTemplate;
 
 
-    //@Cacheable(value = "leetcodeProfiles", key = "#username" )
+    @Cacheable(value = "leetcodeProfiles", key = "#username" )
     public LeetcodeStatsDTO getUserStats(String username) {
         String url = "https://leetcode.com/graphql" + username;
         String query = """

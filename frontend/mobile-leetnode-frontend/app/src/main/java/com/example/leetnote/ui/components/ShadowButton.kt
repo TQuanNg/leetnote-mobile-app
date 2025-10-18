@@ -1,5 +1,6 @@
 package com.example.leetnote.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -36,7 +38,7 @@ fun ShadowButton(
         Box(
             modifier = Modifier
                 .matchParentSize()
-                .padding(bottom = 4.dp) // reduce shadow at bottom
+                .padding(bottom = 7.dp) // reduce shadow at bottom
                 .offset(x = shadowOffsetX, y = shadowOffsetY)
         ) {
             Button(
@@ -49,13 +51,14 @@ fun ShadowButton(
         }
 
         // Foreground button
-        Button(
+        OutlinedButton(
             onClick = onClick,
             shape = RoundedCornerShape(cornerRadius),
             colors = ButtonDefaults.buttonColors(
                 containerColor = foregroundColor,
                 contentColor = contentColor
             ),
+            border = BorderStroke(2.dp, Color.Black),
             elevation = ButtonDefaults.buttonElevation(0.dp),
             modifier = Modifier.fillMaxWidth()
         ) {

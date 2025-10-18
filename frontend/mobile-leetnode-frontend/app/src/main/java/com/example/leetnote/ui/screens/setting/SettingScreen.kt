@@ -78,11 +78,6 @@ fun SettingContent(
                 value = currentUser.email ?: "Unknown",
                 onClick = { /* show dialog or copy email */ }
             )
-            SettingItem(
-                title = "Username",
-                value = "Unknown",
-                onClick = { /* navigate to edit username */ }
-            )
 
             Spacer(modifier = Modifier.height(16.dp))
 

@@ -3,6 +3,7 @@ package com.example.leetnote.ui.screens.profile
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
@@ -24,9 +25,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
@@ -40,12 +43,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.leetnote.R
+import com.example.leetnote.ui.components.ShadowButton
+import com.example.leetnote.ui.navigation.Screen
 
 @Composable
 fun ProfileScreen(
@@ -55,19 +62,7 @@ fun ProfileScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
 
-    /*
-    val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        uri?.let {
-            viewModel.uploadProfileImage(it.toString())
-        }
-    }
-
-     */
-
     Column(modifier = Modifier.fillMaxSize()) {
-
         // Show loading indicator
         if (isLoading) {
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
@@ -90,6 +85,12 @@ fun ProfileScreen(
             progress = state.progress,
             leetcodeUsername = state.leetcodeUsername,
             solvedCount = state.solvedCount,
+            solvedEasy = state.solvedEasy,
+            solvedMedium = state.solvedMedium,
+            solvedHard = state.solvedHard,
+            easyTotal = 907,
+            mediumTotal = 1933,
+            hardTotal = 876,
             onLeetCodeConfirm = { viewModel.connectLeetCode(it) },
             onUploadProfileImage = { newUrl -> viewModel.uploadProfileImage(newUrl) },
             onDeleteProfileImage = { viewModel.deleteProfileImage() },
@@ -97,7 +98,6 @@ fun ProfileScreen(
         )
     }
 }
-
 
 @Composable
 fun ProfileContent(
@@ -107,6 +107,12 @@ fun ProfileContent(
     progress: Float,
     leetcodeUsername: String?,
     solvedCount: Int?,
+    solvedEasy: Int?,
+    solvedMedium: Int?,
+    solvedHard: Int?,
+    easyTotal: Int?,
+    mediumTotal: Int?,
+    hardTotal: Int?,
     onLeetCodeConfirm: (String) -> Unit,
     onUploadProfileImage: (String) -> Unit,
     onDeleteProfileImage: () -> Unit,
@@ -114,8 +120,16 @@ fun ProfileContent(
 ) {
     var input by remember { mutableStateOf("") }
     var showEditDialog by remember { mutableStateOf(false) }
-    var showDevDialog by remember { mutableStateOf(false) }
 
+    // Bottom sheet visibility
+    var showImageSheet by remember { mutableStateOf(false) }
+
+    // Image picker for uploading a new photo
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let { onUploadProfileImage(it.toString()) }
+    }
 
     Column(
         modifier = Modifier
@@ -123,35 +137,45 @@ fun ProfileContent(
             .padding(16.dp)
     ) {
         // Profile row (image + username + level)
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Image(
-                painter = painterResource(id = R.drawable.default_profile_photo),
-                contentDescription = "Profile Image",
-                modifier = Modifier
-                    .size(72.dp)
-                    .clip(CircleShape)
-            )
-            /*
-            AsyncImage(
-                model = profileImageUrl,
-                contentDescription = "Profile Image",
-                modifier = Modifier
-                    .size(72.dp)
-                    .clip(CircleShape)
-                    .combinedClickable(
-                        onClick = { /* TODO: View larger image */ },
-                        onLongClick = {
-                            // Example: change image URL (replace with file picker logic)
-                            onUploadProfileImage("https://example.com/new_image.png")
-                        }
-                    )
-            )
-
-             */
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (!profileImageUrl.isNullOrEmpty()) {
+                AsyncImage(
+                    model = profileImageUrl,
+                    contentDescription = "Profile Image",
+                    modifier = Modifier
+                        .size(72.dp)
+                        .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                        .clip(CircleShape)
+                        .combinedClickable(
+                            onClick = {},
+                            onLongClick = { showImageSheet = true }
+                        )
+                )
+            } else {
+                Image(
+                    painter = painterResource(id = R.drawable.default_profile_photo),
+                    contentDescription = "Profile Image",
+                    modifier = Modifier
+                        .size(72.dp)
+                        .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                        .clip(CircleShape)
+                        .combinedClickable(
+                            onClick = {},
+                            onLongClick = { showImageSheet = true }
+                        )
+                )
+            }
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            Column {
+            Column (
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(2.dp, Color.Black, RoundedCornerShape(12.dp))
+                    .padding(12.dp)
+            ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = username.ifEmpty { "No username" },
@@ -163,6 +187,8 @@ fun ProfileContent(
                         contentDescription = "Edit username",
                         modifier = Modifier
                             .size(20.dp)
+                            .border(1.5.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(4.dp))
+                            .padding(2.dp)
                             .clickable { showEditDialog = true }
                     )
                 }
@@ -172,9 +198,9 @@ fun ProfileContent(
                 LinearProgressIndicator(
                     progress = { progress },
                     modifier = Modifier
-                                            .fillMaxWidth(0.6f)
-                                            .height(8.dp)
-                                            .clip(RoundedCornerShape(4.dp)),
+                        .fillMaxWidth(0.6f)
+                        .height(8.dp)
+                        .clip(RoundedCornerShape(4.dp)),
                     color = ProgressIndicatorDefaults.linearColor,
                     trackColor = ProgressIndicatorDefaults.linearTrackColor,
                     strokeCap = ProgressIndicatorDefaults.LinearStrokeCap,
@@ -195,14 +221,14 @@ fun ProfileContent(
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Button(
-                onClick = {
-                    //onLeetCodeConfirm(input)
-                    showDevDialog = true },
-                modifier = Modifier.align(Alignment.End)
-            ) {
-                Text("Confirm")
-            }
+
+            ShadowButton(
+                text = "Confirm",
+                onClick = { onLeetCodeConfirm(input) },
+                modifier = Modifier.align(Alignment.End),
+                foregroundColor = Color(0xFF7B9EFF),
+                contentColor = Color.White
+            )
         } else {
             // Show LeetCode profile
             Card(
@@ -237,12 +263,35 @@ fun ProfileContent(
                         )
                     }
                     Text("Problems Solved")
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Difficulty circular indicators (share of total)
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        DifficultyIndicator(
+                            label = "Easy",
+                            count = solvedEasy,
+                            total = easyTotal,
+                            progressColor = Color(0xFF4CAF50),
+                            modifier = Modifier.weight(1f)
+                        )
+                        DifficultyIndicator(
+                            label = "Medium",
+                            count = solvedMedium,
+                            total = mediumTotal,
+                            progressColor = Color(0xFFFF9800),
+                            modifier = Modifier.weight(1f)
+                        )
+                        DifficultyIndicator(
+                            label = "Hard",
+                            count = solvedHard,
+                            total = hardTotal,
+                            progressColor = Color(0xFFF44336),
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                 }
             }
-        }
-
-        if (showDevDialog) {
-            InDevelopmentDialog(onDismiss = { showDevDialog = false })
         }
 
         if (showEditDialog) {
@@ -253,6 +302,21 @@ fun ProfileContent(
             )
         }
     }
+
+    // Bottom sheet for image actions
+    ProfileImageActionSheet(
+        visible = showImageSheet,
+        hasImage = !profileImageUrl.isNullOrEmpty(),
+        onDismiss = { showImageSheet = false },
+        onUpload = {
+            showImageSheet = false
+            imagePickerLauncher.launch("image/*")
+        },
+        onRemove = {
+            showImageSheet = false
+            onDeleteProfileImage()
+        }
+    )
 }
 
 @Composable
@@ -306,6 +370,82 @@ fun InDevelopmentDialog(onDismiss: () -> Unit) {
     )
 }
 
+@Composable
+private fun DifficultyIndicator(
+    label: String,
+    count: Int?,
+    total: Int?,
+    progressColor: Color,
+    modifier: Modifier = Modifier
+) {
+    val c = (count ?: 0).coerceAtLeast(0)
+    val tRaw = total ?: c
+    val t = if (tRaw <= 0) 1 else tRaw
+    val progress = (c.toFloat() / t.toFloat()).coerceIn(0f, 1f)
+    val totalText = total?.toString() ?: "?"
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(
+                progress = { progress },
+                strokeWidth = 6.dp,
+                color = progressColor,
+                modifier = Modifier.size(64.dp)
+            )
+            Text(
+                text = "$c/$totalText",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun ProfileImageActionSheet(
+    visible: Boolean,
+    hasImage: Boolean,
+    onDismiss: () -> Unit,
+    onUpload: () -> Unit,
+    onRemove: () -> Unit,
+) {
+    if (!visible) return
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss
+    ) {
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)) {
+            Button(onClick = onUpload, modifier = Modifier.fillMaxWidth()) {
+                Text("Upload photo")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(
+                onClick = onRemove,
+                enabled = hasImage,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Remove current photo")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
+                Text("Cancel")
+            }
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun ProfileScreenPreview() {
@@ -317,6 +457,12 @@ fun ProfileScreenPreview() {
             progress = 0.65f,
             leetcodeUsername = "tanNguyen123",
             solvedCount = 350,
+            solvedEasy = 150,
+            solvedMedium = 150,
+            solvedHard = 50,
+            easyTotal = 300,
+            mediumTotal = 500,
+            hardTotal = 100,
             onLeetCodeConfirm = {},
             onUploadProfileImage = {},
             onDeleteProfileImage = {},
@@ -330,12 +476,18 @@ fun ProfileScreenPreview() {
 fun ProfileScreenFirstTimePreview() {
     MaterialTheme {
         ProfileContent(
-            profileImageUrl = "https://avatars.githubusercontent.com/u/1?v=4",
+            profileImageUrl = null,
             username = "New User",
             level = 1,
             progress = 0.1f,
-            leetcodeUsername = null, // 👈 triggers first-time UI
+            leetcodeUsername = null,
             solvedCount = null,
+            solvedEasy = null,
+            solvedMedium = null,
+            solvedHard = null,
+            easyTotal = null,
+            mediumTotal = null,
+            hardTotal = null,
             onLeetCodeConfirm = {},
             onUploadProfileImage = {},
             onDeleteProfileImage = {},

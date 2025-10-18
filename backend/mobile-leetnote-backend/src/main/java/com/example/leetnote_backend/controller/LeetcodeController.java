@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/leetcode")
+@RequestMapping("/api/leetcode")
 @RequiredArgsConstructor
 public class LeetcodeController {
 
@@ -23,6 +23,7 @@ public class LeetcodeController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable String username
     ) {
+        Long userId = userPrincipal.getUserId();
         LeetcodeStatsDTO stats = leetCodeService.getUserStats(username);
         return ResponseEntity.ok(stats);
     }

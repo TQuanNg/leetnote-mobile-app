@@ -8,6 +8,7 @@ import com.example.leetnote.data.model.SubmissionDTO
 import com.example.leetnote.data.model.UpdateProfileRequest
 import com.example.leetnote.data.model.UserProfileDTO
 import com.example.leetnote.data.repository.EvaluationDTO
+import com.example.leetnote.data.repository.LeetcodeStatsDTO
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -78,8 +79,8 @@ interface LeetnoteApiService {
         @Query("problemId") problemId: Long
     ): List<EvaluationDTO>
 
-    @GET("leetcode/{username")
+    @GET("api/leetcode/{username}")
     suspend fun getUserStats(
         @Path("username") username: String
-    ): Response<Any>
+    ): Response<LeetcodeStatsDTO>
 }
