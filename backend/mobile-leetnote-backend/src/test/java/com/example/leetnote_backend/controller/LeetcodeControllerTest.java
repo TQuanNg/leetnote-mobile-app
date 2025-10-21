@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -56,10 +57,10 @@ public class LeetcodeControllerTest {
         when(leetcodeService.getUserStats(username)).thenReturn(expectedStats);
 
         // Act & Assert
-        mockMvc.perform(get("/leetcode/{username}", username)
+        mockMvc.perform(get("/api/leetcode/{username}", username)
                         .with(authenticated()))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json"))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.username").value(username))
                 .andExpect(jsonPath("$.totalSolved").value(100))
                 .andExpect(jsonPath("$.easySolved").value(40))
@@ -76,10 +77,10 @@ public class LeetcodeControllerTest {
         when(leetcodeService.getUserStats(username)).thenReturn(expectedStats);
 
         // Act & Assert
-        mockMvc.perform(get("/leetcode/{username}", username)
+        mockMvc.perform(get("/api/leetcode/{username}", username)
                         .with(authenticated()))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json"))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.username").value(username))
                 .andExpect(jsonPath("$.totalSolved").value(0))
                 .andExpect(jsonPath("$.easySolved").value(0))
@@ -96,7 +97,7 @@ public class LeetcodeControllerTest {
 
         // Act & Assert
         Exception exception = assertThrows(Exception.class, () ->
-                mockMvc.perform(get("/leetcode/{username}", username)
+                mockMvc.perform(get("/api/leetcode/{username}", username)
                                 .with(authenticated()))
                         .andReturn()
         );
@@ -107,14 +108,15 @@ public class LeetcodeControllerTest {
 
     @Test
     void getUserStats_WithAuthentication_Returns200() throws Exception {
-        // Arrange - Since addFilters = false, authentication is bypassed
+        // Arrange - Controller requires @AuthenticationPrincipal, so supply a principal
         String username = "testuser";
         LeetcodeStatsDTO expectedStats = new LeetcodeStatsDTO(username, 50, 20, 20, 10);
 
         when(leetcodeService.getUserStats(username)).thenReturn(expectedStats);
 
-        // Act & Assert - Without authentication should still work due to addFilters = false
-        mockMvc.perform(get("/leetcode/{username}", username))
+        // Act & Assert
+        mockMvc.perform(get("/api/leetcode/{username}", username)
+                        .with(authenticated()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value(username));
     }
@@ -128,7 +130,7 @@ public class LeetcodeControllerTest {
         when(leetcodeService.getUserStats(username)).thenReturn(expectedStats);
 
         // Act & Assert
-        mockMvc.perform(get("/leetcode/{username}", username)
+        mockMvc.perform(get("/api/leetcode/{username}", username)
                         .with(authenticated()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value(username))
@@ -144,7 +146,7 @@ public class LeetcodeControllerTest {
         when(leetcodeService.getUserStats(username)).thenReturn(expectedStats);
 
         // Act & Assert
-        mockMvc.perform(get("/leetcode/{username}", username)
+        mockMvc.perform(get("/api/leetcode/{username}", username)
                         .with(authenticated()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value(username))

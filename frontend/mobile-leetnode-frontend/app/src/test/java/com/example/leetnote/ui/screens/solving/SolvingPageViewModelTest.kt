@@ -5,8 +5,10 @@ import app.cash.turbine.test
 import com.example.leetnote.data.model.ProblemDetailDTO
 import com.example.leetnote.data.model.SolutionDTO
 import com.example.leetnote.data.model.SubmissionDTO
-import com.example.leetnote.data.repository.EvaluationDTO
 import com.example.leetnote.data.repository.EvaluationDetail
+import com.example.leetnote.data.repository.EvaluationDTO
+import com.example.leetnote.data.repository.EvaluationDetailDTO
+import com.example.leetnote.data.repository.EvaluationListItemDTO
 import com.example.leetnote.data.repository.EvaluationRepository
 import com.example.leetnote.data.repository.ProblemRepository
 import io.mockk.coEvery
@@ -67,17 +69,34 @@ class SolvingPageViewModelTest {
         createdAt = "2025-10-14T12:00:00Z"
     )
 
-    private val sampleEvaluationDetail = EvaluationDetail(
+    private val sampleEvaluationDTO = EvaluationDTO(
         rating = 85,
         issue = listOf("Missing edge case handling"),
         feedback = listOf("Good approach", "Consider optimization")
     )
 
-    private val sampleEvaluation = EvaluationDTO(
+    private val sampleEvaluation = EvaluationDetail(
         id = 1L,
         version = 1,
-        evaluation = sampleEvaluationDetail,
+        evaluation = sampleEvaluationDTO,
         createdAt = "2025-10-14T12:05:00Z"
+    )
+
+    private val sampleEvaluationDetailDTO = EvaluationDetailDTO(
+        evaluationId = 1L,
+        problemId = 1L,
+        problemTitle = "Two Sum",
+        difficulty = "Easy",
+        createdAt = "2025-10-14T12:05:00Z",
+        evaluation = sampleEvaluationDTO,
+        solutionText = "def twoSum(nums, target):\n    # solution code\n    pass"
+    )
+
+    private val sampleEvaluationListItem = EvaluationListItemDTO(
+        evaluationId = 1L,
+        problemId = 1L,
+        problemTitle = "Two Sum",
+        createdAt = "2025-10-14T12:00:00Z"
     )
 
     @Before
@@ -120,7 +139,7 @@ class SolvingPageViewModelTest {
         assertFalse(isLoading)
         assertNull(lastSubmission)
         assertNull(lastEvaluation)
-        assertEquals(emptyList<EvaluationDTO>(), allEvaluations)
+        assertEquals(emptyList<EvaluationListItemDTO>(), allEvaluations)
         assertNull(evaluationResult)
         assertNull(error)
     }
@@ -381,7 +400,7 @@ class SolvingPageViewModelTest {
     fun `fetchLastEvaluation should load evaluation successfully`() = runTest {
         // Given
         val problemId = 1L
-        coEvery { evaluationRepository.getLastEvaluation(problemId) } returns sampleEvaluation
+        coEvery { evaluationRepository.getNewEvaluation(problemId) } returns sampleEvaluation
 
         // When
         viewModel.fetchLastEvaluation(problemId)
@@ -391,14 +410,14 @@ class SolvingPageViewModelTest {
         assertEquals(sampleEvaluation, viewModel.lastEvaluation.first())
         assertFalse(viewModel.isLoading.first())
 
-        coVerify { evaluationRepository.getLastEvaluation(problemId) }
+        coVerify { evaluationRepository.getNewEvaluation(problemId) }
     }
 
     @Test
     fun `fetchLastEvaluation should handle exception and set null`() = runTest {
         // Given
         val problemId = 1L
-        coEvery { evaluationRepository.getLastEvaluation(problemId) } throws RuntimeException("API error")
+        coEvery { evaluationRepository.getNewEvaluation(problemId) } throws RuntimeException("API error")
 
         // When
         viewModel.fetchLastEvaluation(problemId)
@@ -408,42 +427,7 @@ class SolvingPageViewModelTest {
         assertNull(viewModel.lastEvaluation.first())
         assertFalse(viewModel.isLoading.first())
 
-        coVerify { evaluationRepository.getLastEvaluation(problemId) }
-    }
-
-    @Test
-    fun `fetchAllEvaluations should load evaluations successfully`() = runTest {
-        // Given
-        val problemId = 1L
-        val evaluations = listOf(sampleEvaluation, sampleEvaluation.copy(id = 2L))
-        coEvery { evaluationRepository.getAllEvaluations(problemId) } returns evaluations
-
-        // When
-        viewModel.fetchAllEvaluations(problemId)
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // Then
-        assertEquals(evaluations, viewModel.allEvaluations.first())
-        assertFalse(viewModel.isLoading.first())
-
-        coVerify { evaluationRepository.getAllEvaluations(problemId) }
-    }
-
-    @Test
-    fun `fetchAllEvaluations should handle exception and set empty list`() = runTest {
-        // Given
-        val problemId = 1L
-        coEvery { evaluationRepository.getAllEvaluations(problemId) } throws RuntimeException("API error")
-
-        // When
-        viewModel.fetchAllEvaluations(problemId)
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // Then
-        assertEquals(emptyList<EvaluationDTO>(), viewModel.allEvaluations.first())
-        assertFalse(viewModel.isLoading.first())
-
-        coVerify { evaluationRepository.getAllEvaluations(problemId) }
+        coVerify { evaluationRepository.getNewEvaluation(problemId) }
     }
 
     @Test
@@ -474,7 +458,7 @@ class SolvingPageViewModelTest {
         // Given
         val problemId = 1L
         coEvery { evaluationRepository.getLastSubmission(problemId) } returns sampleSubmission
-        coEvery { evaluationRepository.getLastEvaluation(problemId) } returns sampleEvaluation
+        coEvery { evaluationRepository.getNewEvaluation(problemId) } returns sampleEvaluation
 
         // When - Start multiple operations
         viewModel.fetchLastSubmission(problemId)
@@ -487,7 +471,7 @@ class SolvingPageViewModelTest {
         assertFalse(viewModel.isLoading.first())
 
         coVerify { evaluationRepository.getLastSubmission(problemId) }
-        coVerify { evaluationRepository.getLastEvaluation(problemId) }
+        coVerify { evaluationRepository.getNewEvaluation(problemId) }
     }
 
     @Test
@@ -506,35 +490,5 @@ class SolvingPageViewModelTest {
         // Then - Error should be cleared
         assertNull(viewModel.error.first())
         assertEquals("new solution", viewModel.solutionText.first())
-    }
-
-    @Test
-    fun `evaluation detail should contain correct structure`() = runTest {
-        // Given
-        val problemId = 1L
-        val detailedEvaluation = EvaluationDTO(
-            id = 1L,
-            version = 1,
-            evaluation = EvaluationDetail(
-                rating = 95,
-                issue = listOf("Minor optimization possible", "Edge case consideration"),
-                feedback = listOf("Excellent approach", "Clean code", "Good time complexity")
-            ),
-            createdAt = "2025-10-14T12:00:00Z"
-        )
-
-        coEvery { evaluationRepository.getLastEvaluation(problemId) } returns detailedEvaluation
-
-        // When
-        viewModel.fetchLastEvaluation(problemId)
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // Then
-        val result = viewModel.lastEvaluation.first()
-        assertEquals(detailedEvaluation, result)
-        assertEquals(95, result?.evaluation?.rating)
-        assertEquals(2, result?.evaluation?.issue?.size)
-        assertEquals(3, result?.evaluation?.feedback?.size)
-        assertTrue(result?.evaluation?.feedback?.contains("Excellent approach") == true)
     }
 }

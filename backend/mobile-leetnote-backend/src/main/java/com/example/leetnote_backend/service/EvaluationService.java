@@ -1,7 +1,9 @@
 package com.example.leetnote_backend.service;
 
-import com.example.leetnote_backend.controller.SubmissionRequest;
+import com.example.leetnote_backend.model.DTO.SubmissionRequest;
 import com.example.leetnote_backend.model.DTO.EvaluationDTO;
+import com.example.leetnote_backend.model.DTO.EvaluationListItemDTO;
+import com.example.leetnote_backend.model.DTO.EvaluationDetailDTO;
 import com.example.leetnote_backend.model.entity.Evaluation;
 import com.example.leetnote_backend.model.entity.Problem;
 import com.example.leetnote_backend.model.entity.Submission;
@@ -83,13 +85,61 @@ public class EvaluationService {
         }
     }
 
-
     public Optional<Evaluation> getLastEvaluation(Long userId, Long problemId) {
         return evaluationRepository.findTopBySubmission_UserIdAndSubmission_ProblemIdOrderByCreatedAtDesc(userId, problemId);
     }
 
-    public List<Evaluation> getAllEvaluations(Long userId, Long problemId) {
-        return evaluationRepository.findBySubmission_UserIdAndSubmission_ProblemIdOrderByCreatedAtDesc(userId, problemId);
+    public List<EvaluationListItemDTO> getAllEvaluations(Long userId) {
+        // Get latest evaluation for each problem the user has submitted
+        List<Evaluation> evaluations = evaluationRepository.findLatestEvaluationsByUserId(userId);
+
+        return evaluations.stream()
+                .map(evaluation -> {
+                    Long problemId = evaluation.getSubmission().getProblemId();
+                    String problemTitle = problemRepository.findById(problemId)
+                            .map(Problem::getTitle)
+                            .orElse("Unknown Problem");
+
+                    return new EvaluationListItemDTO(
+                            evaluation.getId(),
+                            problemId,
+                            problemTitle,
+                            evaluation.getCreatedAt()
+                    );
+                })
+                .toList();
     }
 
+    public Optional<EvaluationDetailDTO> getEvaluationDetailById(Long userId, Long evaluationId) {
+        // When user clicks on a specific evaluation, return that eval detail and its problem info
+        return evaluationRepository.findById(evaluationId)
+                .filter(ev -> ev.getSubmission() != null && ev.getSubmission().getUserId().equals(userId))
+                .map(ev -> {
+                    Submission sub = ev.getSubmission();
+                    Long pid = sub.getProblemId();
+                    Problem p = problemRepository.findById(pid).orElse(null);
+                    EvaluationDetailDTO dto = new EvaluationDetailDTO();
+                    dto.setEvaluationId(ev.getId());
+                    dto.setCreatedAt(ev.getCreatedAt());
+                    dto.setEvaluation(ev.getEvaluation());
+                    dto.setSolutionText(sub.getSolutionText());
+
+                    if (p != null) {
+                        dto.setProblemId(p.getId());
+                        dto.setProblemTitle(p.getTitle());
+                        dto.setDifficulty(p.getDifficulty());
+                    } else {
+                        dto.setProblemId(pid);
+                        dto.setProblemTitle("Unknown Problem");
+                        dto.setDifficulty(null);
+                    }
+                    return dto;
+                });
+    }
+
+    public Optional<EvaluationDetailDTO> getLastEvaluationDetail(Long userId, Long problemId) {
+        return evaluationRepository
+                .findTopBySubmission_UserIdAndSubmission_ProblemIdOrderByCreatedAtDesc(userId, problemId)
+                .flatMap(ev -> getEvaluationDetailById(userId, ev.getId()));
+    }
 }

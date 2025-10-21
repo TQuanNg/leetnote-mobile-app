@@ -1,6 +1,7 @@
 package com.example.leetnote_backend.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -10,14 +11,24 @@ import java.util.Map;
 
 @Service
 public class TogetherAiService {
-    private final WebClient webClient;
+    private WebClient webClient; // no longer final to allow test injection
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public TogetherAiService(@Value("${together.api.key}") String apiKey) {
+    public TogetherAiService() {
+        this("");
+    }
+
+    @Autowired
+    public TogetherAiService(@Value("${together.api.key:}") String apiKey) {
         this.webClient = WebClient.builder()
                 .baseUrl("https://api.together.xyz/v1/chat/completions")
                 .defaultHeader("Authorization", "Bearer " + apiKey)
                 .build();
+    }
+
+    // Test-only: allow injecting a stubbed WebClient
+    void setWebClientForTesting(WebClient webClient) {
+        this.webClient = webClient;
     }
 
     public String callTogetherModel(String prompt) {
@@ -58,10 +69,10 @@ public class TogetherAiService {
             String cleaned = rawOutput.strip();
 
             // Keep only the part between the first "{" and the last "}"
-            int start = cleaned.indexOf("{");
-            int end = cleaned.lastIndexOf("}") + 1;
-            if (start != -1 && end != -1) {
-                cleaned = cleaned.substring(start, end);
+            int start = cleaned.indexOf('{');
+            int endIdx = cleaned.lastIndexOf('}');
+            if (start >= 0 && endIdx >= 0 && endIdx >= start) {
+                cleaned = cleaned.substring(start, endIdx + 1);
             }
 
             Map<String, Object> parsed = mapper.readValue(cleaned, Map.class);

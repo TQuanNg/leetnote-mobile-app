@@ -73,6 +73,7 @@ CREATE TABLE public.submissions (
 
 CREATE TABLE public.evaluations (
                                     id SERIAL PRIMARY KEY,
+                                    user_id INTEGER NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
                                     submission_id INTEGER NOT NULL REFERENCES public.submissions(id) ON DELETE CASCADE,
                                     version SMALLINT NOT NULL CHECK (version BETWEEN 1 AND 3), -- v1, v2, v3
                                     evaluation JSONB,  -- store structured evaluation: {rating, suggestions, corrections, feedback}

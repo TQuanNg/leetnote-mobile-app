@@ -16,12 +16,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.leetnote.R
-import com.example.leetnote.data.repository.EvaluationDTO
+import com.example.leetnote.data.repository.EvaluationDetail
 import com.example.leetnote.ui.components.CustomCard
 
 @Composable
@@ -41,7 +39,7 @@ fun EvaluationScreen(
 
 @Composable
 fun EvaluationContent(
-    lastEvaluation: EvaluationDTO?
+    lastEvaluation: EvaluationDetail?
 ) {
     Column(
         modifier = Modifier

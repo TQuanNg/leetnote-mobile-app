@@ -23,6 +23,7 @@ import com.example.leetnote.ui.screens.login.AuthViewModel
 import com.example.leetnote.ui.screens.login.LoginScreen
 import com.example.leetnote.ui.screens.login.SignupScreen
 import com.example.leetnote.ui.screens.onboarding.OnboardingScreen
+import com.example.leetnote.ui.screens.profile.EvaluationDetailScreen
 import com.example.leetnote.ui.screens.profile.ProfileScreen
 import com.example.leetnote.ui.screens.profile.ProfileViewModel
 import com.example.leetnote.ui.screens.splash.SplashScreen
@@ -65,7 +66,7 @@ fun NavigationGraph(navController: NavHostController) {
         }
         composable(Screen.Profile.route) {
             val viewModel: ProfileViewModel = hiltViewModel()
-            ProfileScreen(viewModel)
+            ProfileScreen(viewModel, navController)
         }
         composable(Screen.Learning.route) { LearningResourcesScreen(navController) }
         composable(Screen.Settings.route) {
@@ -88,13 +89,23 @@ fun NavigationGraph(navController: NavHostController) {
             val problemId = backStackEntry.arguments?.getString("problemId")?.toLongOrNull() ?: -1
             EvaluationScreen(problemId = problemId)
         }
+        composable(Screen.EvaluationDetail.route) { backStackEntry ->
+            val problemId = backStackEntry.arguments?.getString("problemId")?.toLongOrNull() ?: -1
+            val evaluationId = backStackEntry.arguments?.getString("evaluationId")?.toLongOrNull() ?: -1
+            val viewModel: ProfileViewModel = hiltViewModel()
+            EvaluationDetailScreen(
+                problemId = problemId, 
+                evaluationId = evaluationId,
+                onNavigateBack = { navController.popBackStack() },
+                viewModel = viewModel
+            )
+        }
         composable(Screen.LearningItem.route) { backStackEntry ->
             val patternId = backStackEntry.arguments?.getString("patternId")?.toIntOrNull() ?: -1
             val viewModel: LearningResViewModel = hiltViewModel()
             val patterns by viewModel.patterns.collectAsState()
             val pattern = patterns.find { it.id == patternId }
             pattern?.let { LearningItemScreen(it) }
-
         }
     }
 }

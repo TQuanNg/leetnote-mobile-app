@@ -1,7 +1,8 @@
 package com.example.leetnote_backend.service;
 
-import com.example.leetnote_backend.controller.SubmissionRequest;
+import com.example.leetnote_backend.model.DTO.SubmissionRequest;
 import com.example.leetnote_backend.model.DTO.EvaluationDTO;
+import com.example.leetnote_backend.model.DTO.EvaluationListItemDTO;
 import com.example.leetnote_backend.model.entity.Evaluation;
 import com.example.leetnote_backend.model.entity.Problem;
 import com.example.leetnote_backend.model.entity.Submission;
@@ -238,26 +239,93 @@ class EvaluationServiceTest {
     }
 
     @Test
-    void getLastEvaluation_delegatesToRepository() {
-        Evaluation e = new Evaluation();
-        when(evaluationRepository.findTopBySubmission_UserIdAndSubmission_ProblemIdOrderByCreatedAtDesc(userId, problemId))
-                .thenReturn(Optional.of(e));
+    void getLastEvaluationDetail_returnsDetail() {
+        // Arrange
+        Long evalId = 777L;
+        Submission sub = submission(300L);
+        sub.setSolutionText("solution");
 
-        Optional<Evaluation> result = evaluationService.getLastEvaluation(userId, problemId);
+        Evaluation ev = new Evaluation();
+        ev.setId(evalId);
+        ev.setSubmission(sub);
+        ev.setCreatedAt(LocalDateTime.now());
+        EvaluationDTO edto = new EvaluationDTO();
+        edto.setRating(4);
+        ev.setEvaluation(edto);
+
+        Problem p = new Problem();
+        p.setId(problemId);
+        p.setTitle("Two Sum");
+        p.setDifficulty("Easy");
+
+        when(evaluationRepository.findTopBySubmission_UserIdAndSubmission_ProblemIdOrderByCreatedAtDesc(userId, problemId))
+                .thenReturn(Optional.of(ev));
+        when(evaluationRepository.findById(evalId)).thenReturn(Optional.of(ev));
+        when(problemRepository.findById(problemId)).thenReturn(Optional.of(p));
+
+        // Act
+        var result = evaluationService.getLastEvaluationDetail(userId, problemId);
+
+        // Assert
         assertTrue(result.isPresent());
-        assertSame(e, result.get());
+        var detail = result.get();
+        assertEquals(evalId, detail.getEvaluationId());
+        assertEquals(problemId, detail.getProblemId());
+        assertEquals("Two Sum", detail.getProblemTitle());
+        assertEquals("Easy", detail.getDifficulty());
+        assertEquals(4, detail.getEvaluation().getRating());
+        assertEquals("solution", detail.getSolutionText());
+
         verify(evaluationRepository).findTopBySubmission_UserIdAndSubmission_ProblemIdOrderByCreatedAtDesc(userId, problemId);
+        verify(evaluationRepository).findById(evalId);
+        verify(problemRepository).findById(problemId);
     }
 
     @Test
-    void getAllEvaluations_delegatesToRepository() {
-        List<Evaluation> list = List.of(new Evaluation(), new Evaluation());
-        when(evaluationRepository.findBySubmission_UserIdAndSubmission_ProblemIdOrderByCreatedAtDesc(userId, problemId))
-                .thenReturn(list);
+    void getAllEvaluations_returnsSingleLatestItem_withProblemTitleAndCreatedAt() {
+        // Arrange
+        EvaluationDTO evalDto1 = new EvaluationDTO();
+        evalDto1.setRating(4);
+        Evaluation e1 = new Evaluation();
+        e1.setEvaluation(evalDto1);
+        e1.setCreatedAt(LocalDateTime.now());
 
-        List<Evaluation> result = evaluationService.getAllEvaluations(userId, problemId);
-        assertEquals(2, result.size());
+        EvaluationDTO evalDto2 = new EvaluationDTO();
+        evalDto2.setRating(3);
+        Evaluation e2 = new Evaluation();
+        e2.setEvaluation(evalDto2);
+        e2.setCreatedAt(e1.getCreatedAt().minusMinutes(10));
+
+        when(evaluationRepository.findBySubmission_UserIdAndSubmission_ProblemIdOrderByCreatedAtDesc(userId, problemId))
+                .thenReturn(List.of(e1, e2));
+
+        Problem p = new Problem();
+        p.setId(problemId);
+        p.setTitle("Two Sum");
+        when(problemRepository.findById(problemId)).thenReturn(Optional.of(p));
+
+        // Act
+        List<EvaluationListItemDTO> result = evaluationService.getAllEvaluations(userId, problemId);
+
+        // Assert
+        assertEquals(1, result.size());
+        EvaluationListItemDTO item = result.get(0);
+        assertEquals(problemId, item.getProblemId());
+        assertEquals("Two Sum", item.getProblemTitle());
+        assertEquals(e1.getCreatedAt(), item.getCreatedAt());
+
         verify(evaluationRepository).findBySubmission_UserIdAndSubmission_ProblemIdOrderByCreatedAtDesc(userId, problemId);
+        verify(problemRepository).findById(problemId);
+    }
+
+    @Test
+    void getAllEvaluations_returnsEmptyList_whenNoEvaluations() {
+        when(evaluationRepository.findBySubmission_UserIdAndSubmission_ProblemIdOrderByCreatedAtDesc(userId, problemId))
+                .thenReturn(Collections.emptyList());
+
+        List<EvaluationListItemDTO> result = evaluationService.getAllEvaluations(userId, problemId);
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
     }
 
     private Submission submission(Long id) {

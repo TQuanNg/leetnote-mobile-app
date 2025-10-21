@@ -2,6 +2,9 @@ package com.example.leetnote_backend.controller;
 
 import com.example.leetnote_backend.config.UserPrincipal;
 import com.example.leetnote_backend.model.DTO.EvaluationDTO;
+import com.example.leetnote_backend.model.DTO.EvaluationListItemDTO;
+import com.example.leetnote_backend.model.DTO.EvaluationDetailDTO;
+import com.example.leetnote_backend.model.DTO.SubmissionRequest;
 import com.example.leetnote_backend.model.entity.Evaluation;
 import com.example.leetnote_backend.service.EvaluationService;
 import org.springframework.http.HttpStatus;
@@ -40,7 +43,30 @@ public class EvaluationController {
 
 
     @GetMapping("/last")
-    public ResponseEntity<Evaluation> getLastEvaluation(
+    public ResponseEntity<EvaluationDetailDTO> getLastEvaluation(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @RequestParam(required = false) Long evaluationId,
+            @RequestParam(required = false) Long problemId
+    ) {
+        Long userId = userPrincipal.getUserId();
+
+        if (evaluationId != null) {
+            return submissionService.getEvaluationDetailById(userId, evaluationId)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        }
+
+        if (problemId != null) {
+            return submissionService.getLastEvaluationDetail(userId, problemId)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        }
+
+        return ResponseEntity.badRequest().build();
+    }
+
+    @GetMapping("/new")
+    public ResponseEntity<Evaluation> getNewEvaluation(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestParam Long problemId
     ) {
@@ -51,12 +77,11 @@ public class EvaluationController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Evaluation>> getAllEvaluations(
-            @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @RequestParam Long problemId
+    public ResponseEntity<List<EvaluationListItemDTO>> getAllEvaluations(
+            @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         Long userId = userPrincipal.getUserId();
-        List<Evaluation> evaluations = submissionService.getAllEvaluations(userId, problemId);
+        List<EvaluationListItemDTO> evaluations = submissionService.getAllEvaluations(userId);
         return ResponseEntity.ok(evaluations);
     }
 }

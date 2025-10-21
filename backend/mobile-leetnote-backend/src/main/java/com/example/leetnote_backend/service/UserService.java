@@ -3,18 +3,15 @@ package com.example.leetnote_backend.service;
 import com.example.leetnote_backend.model.entity.User;
 import com.example.leetnote_backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
-
     private final UserRepository userRepository;
-
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     public User findById(Long id) {
         return userRepository.findById(id)

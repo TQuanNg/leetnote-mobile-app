@@ -1,4 +1,4 @@
-package com.example.leetnote_backend.controller;
+package com.example.leetnote_backend.model.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SubmissionRequest {
-    private Long userId;      // optional if you get from auth token
+    private Long userId;
     private Long problemId;
     private String solutionText;
 }

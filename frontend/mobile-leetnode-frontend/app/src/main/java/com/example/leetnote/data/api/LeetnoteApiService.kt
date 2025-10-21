@@ -7,7 +7,9 @@ import com.example.leetnote.data.model.SetUsernameRequest
 import com.example.leetnote.data.model.SubmissionDTO
 import com.example.leetnote.data.model.UpdateProfileRequest
 import com.example.leetnote.data.model.UserProfileDTO
-import com.example.leetnote.data.repository.EvaluationDTO
+import com.example.leetnote.data.repository.EvaluationDetail
+import com.example.leetnote.data.repository.EvaluationDetailDTO
+import com.example.leetnote.data.repository.EvaluationListItemDTO
 import com.example.leetnote.data.repository.LeetcodeStatsDTO
 import retrofit2.Response
 import retrofit2.http.Body
@@ -67,17 +69,21 @@ interface LeetnoteApiService {
     @POST("evaluations")
     suspend fun createEvaluation(
         @Body request: SubmissionDTO.SubmissionRequest
-    ): EvaluationDTO
+    ): EvaluationDetail
+
+    @GET("evaluations/new")
+    suspend fun getNewEvaluation(
+        @Query("problemId") problemId: Long
+    ): Response<EvaluationDetail>
 
     @GET("evaluations/last")
     suspend fun getLastEvaluation(
-        @Query("problemId") problemId: Long
-    ): Response<EvaluationDTO>
+        @Query("evaluationId") evaluationId: Long? = null,
+        @Query("problemId") problemId: Long? = null
+    ): Response<EvaluationDetailDTO>
 
     @GET("evaluations/all")
-    suspend fun getAllEvaluations(
-        @Query("problemId") problemId: Long
-    ): List<EvaluationDTO>
+    suspend fun getAllUserEvaluations(): List<EvaluationListItemDTO>
 
     @GET("api/leetcode/{username}")
     suspend fun getUserStats(

@@ -49,6 +49,8 @@ fun MainScreen(
         Screen.Login.route,
         Screen.Signup.route,
         Screen.Onboarding.route,
+        Screen.Splash.route,
+        Screen.EvaluationDetail.route
     )
 
     Scaffold(

@@ -6,11 +6,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.leetnote.data.model.ProblemDetailDTO
 import com.example.leetnote.data.model.SubmissionDTO
-import com.example.leetnote.data.repository.EvaluationDTO
+import com.example.leetnote.data.repository.EvaluationDetail
+import com.example.leetnote.data.repository.EvaluationListItemDTO
 import com.example.leetnote.data.repository.EvaluationRepository
 import com.example.leetnote.data.repository.ProblemRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -41,19 +42,19 @@ class SolvingPageViewModel @Inject constructor(
     private val _lastSubmission = MutableStateFlow<SubmissionDTO.Submission?>(null)
     val lastSubmission: StateFlow<SubmissionDTO.Submission?> = _lastSubmission.asStateFlow()
 
-    private val _lastEvaluation = MutableStateFlow<EvaluationDTO?>(null)
-    val lastEvaluation: StateFlow<EvaluationDTO?> = _lastEvaluation.asStateFlow()
+    private val _lastEvaluation = MutableStateFlow<EvaluationDetail?>(null)
+    val lastEvaluation: StateFlow<EvaluationDetail?> = _lastEvaluation.asStateFlow()
 
-    private val _allEvaluations = MutableStateFlow<List<EvaluationDTO>>(emptyList())
-    val allEvaluations: StateFlow<List<EvaluationDTO>> = _allEvaluations.asStateFlow()
+    private val _allEvaluations = MutableStateFlow<List<EvaluationListItemDTO>>(emptyList())
+    val allEvaluations: StateFlow<List<EvaluationListItemDTO>> = _allEvaluations.asStateFlow()
 
-    private val _evaluationResult = MutableStateFlow<EvaluationDTO?>(null)
-    val evaluationResult: StateFlow<EvaluationDTO?> = _evaluationResult.asStateFlow()
+    private val _evaluationResult = MutableStateFlow<EvaluationDetail?>(null)
+    val evaluationResult: StateFlow<EvaluationDetail?> = _evaluationResult.asStateFlow()
 
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
-    private val _navigateToEvaluation = MutableSharedFlow<EvaluationDTO>()
+    private val _navigateToEvaluation = MutableSharedFlow<EvaluationDetail>()
     val navigateToEvaluation = _navigateToEvaluation.asSharedFlow()
 
     fun onSolutionTextChange(newText: String) {
@@ -142,24 +143,10 @@ class SolvingPageViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                _lastEvaluation.value = evaluationRepository.getLastEvaluation(problemId)
+                _lastEvaluation.value = evaluationRepository.getNewEvaluation(problemId)
             } catch (e: Exception) {
                 e.printStackTrace()
                 _lastEvaluation.value = null
-            } finally {
-                _isLoading.value = false
-            }
-        }
-    }
-
-    fun fetchAllEvaluations(problemId: Long) {
-        viewModelScope.launch {
-            _isLoading.value = true
-            try {
-                _allEvaluations.value = evaluationRepository.getAllEvaluations(problemId)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                _allEvaluations.value = emptyList()
             } finally {
                 _isLoading.value = false
             }

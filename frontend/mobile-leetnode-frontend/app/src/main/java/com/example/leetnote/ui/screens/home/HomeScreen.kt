@@ -210,12 +210,6 @@ fun ProblemItem(
                         fontWeight = FontWeight.Bold,
                         color = problem.difficulty.toDifficultyColor()
                     )
-                    Text(
-                        text = "ID: ${problem.id}",
-                        fontSize = 14.sp,
-                        color = Color.Gray
-                    )
-
                 }
 
                 Row() {

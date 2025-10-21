@@ -4,6 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.leetnote.data.repository.UserRepository
 import com.example.leetnote.data.repository.LeetcodeRepository
+import com.example.leetnote.data.repository.EvaluationRepository
+import com.example.leetnote.data.repository.EvaluationDetailDTO
+import com.example.leetnote.data.repository.EvaluationListItemDTO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,12 +29,16 @@ data class ProfileUiState(
     val easyTotal: Int? = 907,
     val mediumTotal: Int? = 1933,
     val hardTotal: Int? = 876,
+    val selectedTabIndex: Int = 0,
+    val evaluations: List<EvaluationListItemDTO> = emptyList(),
+    val selectedEvaluationDetail: EvaluationDetailDTO? = null
 )
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val userRepository: UserRepository,
-    private val leetcodeRepository: LeetcodeRepository
+    private val leetcodeRepository: LeetcodeRepository,
+    private val evaluationRepository: EvaluationRepository
 ): ViewModel() {
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
@@ -44,6 +51,60 @@ class ProfileViewModel @Inject constructor(
 
     init {
         loadUserProfile()
+        // loadAllEvaluations()
+    }
+
+    /** Change selected tab */
+    fun selectTab(tabIndex: Int) {
+        _uiState.update { it.copy(selectedTabIndex = tabIndex) }
+    }
+
+    /** Update selected tab index */
+    fun updateTabIndex(tabIndex: Int) {
+        _uiState.update { it.copy(selectedTabIndex = tabIndex) }
+    }
+
+    /** Load all evaluations for the user - requires backend implementation */
+    fun loadAllUserEvaluations() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
+            try {
+                val evaluations = evaluationRepository.getAllUserEvaluations()
+                _uiState.update { it.copy(evaluations = evaluations) }
+            } catch (e: Exception) {
+                _error.value = "Failed to load evaluations: ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    /** Load all evaluations for the user */
+    private fun loadAllEvaluations() {
+        // This is called when switching to evaluations tab
+        loadAllUserEvaluations()
+    }
+
+    /** Get evaluation detail by evaluation ID */
+    fun getEvaluationDetail(evaluationId: Long) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
+            try {
+                val evaluationDetail = evaluationRepository.getEvaluationById(evaluationId)
+                _uiState.update { it.copy(selectedEvaluationDetail = evaluationDetail) }
+            } catch (e: Exception) {
+                _error.value = "Failed to load evaluation detail: ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    /** Clear selected evaluation detail */
+    fun clearEvaluationDetail() {
+        _uiState.update { it.copy(selectedEvaluationDetail = null) }
     }
 
     /** Load the user profile from repository */

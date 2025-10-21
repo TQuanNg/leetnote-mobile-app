@@ -52,6 +52,13 @@ sealed class Screen(
         fun createRoute(problemId: Long) = "evaluation/$problemId"
     }
 
+    object EvaluationDetail : Screen(
+        "evaluationDetail/{problemId}/{evaluationId}",
+        "Evaluation Detail",
+    ) {
+        fun createRoute(problemId: Long, evaluationId: Long) = "evaluationDetail/$problemId/$evaluationId"
+    }
+
     object LearningItem : Screen("learningItem/{patternId}", "Learning Item") {
         fun createRoute(patternId: Int) = "learningItem/$patternId"
     }
@@ -61,4 +68,3 @@ sealed class Screen(
         val allScreens = listOf(Home, Profile, Learning, Settings, Problem, Solution, Solving, Evaluation, LearningItem)
     }
 }
-
