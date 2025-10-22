@@ -67,9 +67,10 @@ Backend: Unit and integration tests for services and controllers using Spring Bo
 
 
 ## 🚀 Setup & Deployment
-Backend is containerized with Docker and hosted on EC2. PostgreSQL database is hosted on AWS.
+The backend is containerized with Docker and hosted on EC2, with a PostgreSQL database also hosted on AWS.
 
-Frontend is built with Jetpack Compose and can be run via Android Studio.
+The frontend, built with Jetpack Compose, is **fully runnable in Android Studio** and connected to the **live** backend.
+
 
 ### Optional Local Setup
 
