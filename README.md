@@ -1,10 +1,10 @@
-## LeetNode App
+## LeetNote App
 
-LeetNode is a full-stack Android application designed to help users **practice, review, and evaluate coding problems** in a more flexible and intuitive way.
+LeetNote is a full-stack Android application designed to help users **practice, review, and evaluate coding problems** in a more flexible and intuitive way.
 
-The idea behind LeetNode came from the need to have a **personal coding notebook** — a place where LeetCoders can review concepts, track progress, and jot down problem-solving ideas directly from their phone. Instead of relying on a laptop or PC every time, users can quickly explore problems, write pseudocode, and reflect on their approach on the go.
+The idea behind LeetNote came from the need to have a **personal coding notebook** — a place where LeetCoders can review concepts, track progress, and jot down problem-solving ideas directly from their phone. Instead of relying on a laptop or PC every time, users can quickly explore problems, write pseudocode, and reflect on their approach on the go.
 
-What makes LeetNode unique is its **AI-powered pseudocode evaluation**, which allows users to express their logic naturally without worrying about syntax. The AI provides structured feedback and a rating based on the reasoning, helping users refine their algorithmic thinking and problem-solving approach.
+What makes LeetNote unique is its **AI-powered pseudocode evaluation**, which allows users to express their logic naturally without worrying about syntax. The AI provides structured feedback and a rating based on the reasoning, helping users refine their algorithmic thinking and problem-solving approach.
 ## 📱 App Screenshot
 <p align="center">
   <img src="https://github.com/user-attachments/assets/ff0671c5-9479-4682-945d-f2570fa70682" width="250"/>
