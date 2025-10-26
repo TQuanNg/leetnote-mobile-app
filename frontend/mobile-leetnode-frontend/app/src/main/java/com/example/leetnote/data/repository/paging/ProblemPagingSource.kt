@@ -1,7 +1,8 @@
-package com.example.leetnote.data.model
+package com.example.leetnote.data.repository.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.example.leetnote.data.model.LeetProblem
 import com.example.leetnote.data.repository.HomeRepository
 import com.example.leetnote.ui.screens.home.FilterParams
 

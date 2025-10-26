@@ -8,21 +8,56 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.DataObject
+import androidx.compose.material.icons.filled.FindInPage
+import androidx.compose.material.icons.filled.Functions
+import androidx.compose.material.icons.filled.Hub
+import androidx.compose.material.icons.filled.Layers
+import androidx.compose.material.icons.filled.Memory
+import androidx.compose.material.icons.filled.Route
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Speed
+import androidx.compose.material.icons.filled.Timeline
+import androidx.compose.material.icons.filled.Transform
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.leetnote.data.model.LearningTopic
 import com.example.leetnote.R
-import com.example.leetnote.ui.components.CustomCard
+import com.example.leetnote.ui.components.PatternCard
 import androidx.compose.runtime.getValue
 import com.example.leetnote.ui.navigation.Screen
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.automirrored.filled.List
+
+// Function to map pattern IDs to specific Material Icons
+fun getPatternIcon(patternId: Int): ImageVector {
+    return when (patternId) {
+        1 -> Icons.Filled.Code // Two Pointers
+        2 -> Icons.Filled.Timeline // Merge Intervals
+        3 -> Icons.Filled.Hub // Two Heaps
+        4 -> Icons.Filled.Search // Modified Binary Search
+        5 -> Icons.AutoMirrored.Filled.List // Top K Elements
+        6 -> Icons.Filled.Route // Backtracking
+        7 -> Icons.Filled.Memory // Dynamic Programming
+        8 -> Icons.Filled.Layers // Tree BFS
+        9 -> Icons.Filled.DataObject // Tree DFS
+        10 -> Icons.Filled.Speed // Sliding Window
+        11 -> Icons.Filled.Functions // Prefix Sum
+        12 -> Icons.Filled.Transform // Greedy
+        13 -> Icons.Filled.FindInPage // Bit Manipulation
+        else -> Icons.Filled.Code // Default icon
+    }
+}
 
 @Composable
 fun LearningResourcesScreen(
@@ -84,13 +119,13 @@ fun LearningResourcesContent(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 rowItems.forEach { pattern ->
-                    CustomCard(
+                    PatternCard(
                         title = pattern.name,
-                        description = "",
+                        icon = getPatternIcon(pattern.id),
                         onClick = { onPatternClick(pattern) },
                         modifier = Modifier
                             .weight(1f)
-                            .height(120.dp)
+                            .height(160.dp)
                     )
                 }
                 if (rowItems.size == 1) {
@@ -99,6 +134,7 @@ fun LearningResourcesContent(
             }
         }
 
+        /*
         // Learning Topics Header
         item {
             Text(
@@ -107,6 +143,7 @@ fun LearningResourcesContent(
                 modifier = Modifier.padding(top = 16.dp, bottom = 16.dp)
             )
         }
+
 
         // Learning Topics grid
         items(topics.chunked(2)) { rowItems ->
@@ -128,7 +165,7 @@ fun LearningResourcesContent(
                     Spacer(modifier = Modifier.weight(1f))
                 }
             }
-        }
+        }*/
     }
 }
 

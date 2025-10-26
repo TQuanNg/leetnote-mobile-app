@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -56,7 +55,7 @@ class EvaluationControllerTest {
     void getAllEvaluations_returnsLatestListItem() throws Exception {
         Long pid = 42L;
         EvaluationListItemDTO item = new EvaluationListItemDTO(100L, pid, "Two Sum", LocalDateTime.now());
-        when(evaluationService.getAllEvaluations(1L, pid)).thenReturn(List.of(item));
+        when(evaluationService.getAllEvaluations(1L)).thenReturn(List.of(item));
 
         mockMvc.perform(get("/evaluations/all").param("problemId", String.valueOf(pid)).with(authenticated()))
                 .andExpect(status().isOk())
@@ -70,7 +69,7 @@ class EvaluationControllerTest {
     @Test
     void getAllEvaluations_returnsEmptyListWhenNone() throws Exception {
         Long pid = 42L;
-        when(evaluationService.getAllEvaluations(1L, pid)).thenReturn(List.of());
+        when(evaluationService.getAllEvaluations(1L)).thenReturn(List.of());
 
         mockMvc.perform(get("/evaluations/all").param("problemId", String.valueOf(pid)).with(authenticated()))
                 .andExpect(status().isOk())
@@ -129,4 +128,3 @@ class EvaluationControllerTest {
                 .andExpect(status().isBadRequest());
     }
 }
-

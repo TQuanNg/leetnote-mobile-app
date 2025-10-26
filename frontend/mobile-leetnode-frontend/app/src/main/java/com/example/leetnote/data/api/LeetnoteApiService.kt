@@ -7,9 +7,9 @@ import com.example.leetnote.data.model.SetUsernameRequest
 import com.example.leetnote.data.model.SubmissionDTO
 import com.example.leetnote.data.model.UpdateProfileRequest
 import com.example.leetnote.data.model.UserProfileDTO
-import com.example.leetnote.data.repository.EvaluationDetail
-import com.example.leetnote.data.repository.EvaluationDetailDTO
-import com.example.leetnote.data.repository.EvaluationListItemDTO
+import com.example.leetnote.data.model.EvaluationDetail
+import com.example.leetnote.data.model.EvaluationDetailDTO
+import com.example.leetnote.data.model.EvaluationListItemDTO
 import com.example.leetnote.data.repository.LeetcodeStatsDTO
 import retrofit2.Response
 import retrofit2.http.Body

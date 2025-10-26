@@ -12,7 +12,6 @@ import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.leetnote.R
-import com.example.leetnote.data.repository.SessionManager
 import com.example.leetnote.data.repository.UserRepository
 import com.example.leetnote.ui.screens.login.token.TokenStorage
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption

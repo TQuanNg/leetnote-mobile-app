@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.leetnote.data.repository.UserRepository
 import com.example.leetnote.data.repository.LeetcodeRepository
 import com.example.leetnote.data.repository.EvaluationRepository
-import com.example.leetnote.data.repository.EvaluationDetailDTO
-import com.example.leetnote.data.repository.EvaluationListItemDTO
+import com.example.leetnote.data.model.EvaluationDetailDTO
+import com.example.leetnote.data.model.EvaluationListItemDTO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -54,17 +54,14 @@ class ProfileViewModel @Inject constructor(
         // loadAllEvaluations()
     }
 
-    /** Change selected tab */
     fun selectTab(tabIndex: Int) {
         _uiState.update { it.copy(selectedTabIndex = tabIndex) }
     }
 
-    /** Update selected tab index */
     fun updateTabIndex(tabIndex: Int) {
         _uiState.update { it.copy(selectedTabIndex = tabIndex) }
     }
 
-    /** Load all evaluations for the user - requires backend implementation */
     fun loadAllUserEvaluations() {
         viewModelScope.launch {
             _isLoading.value = true
@@ -80,13 +77,6 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    /** Load all evaluations for the user */
-    private fun loadAllEvaluations() {
-        // This is called when switching to evaluations tab
-        loadAllUserEvaluations()
-    }
-
-    /** Get evaluation detail by evaluation ID */
     fun getEvaluationDetail(evaluationId: Long) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -102,12 +92,6 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    /** Clear selected evaluation detail */
-    fun clearEvaluationDetail() {
-        _uiState.update { it.copy(selectedEvaluationDetail = null) }
-    }
-
-    /** Load the user profile from repository */
     fun loadUserProfile() {
         viewModelScope.launch {
             _isLoading.value = true
@@ -129,7 +113,6 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    /** Update username */
     fun updateUsername(newUsername: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -149,7 +132,6 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    /** Upload new profile image */
     fun uploadProfileImage(imageUrl: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -165,7 +147,6 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    /** Delete profile image */
     fun deleteProfileImage() {
         viewModelScope.launch {
             _isLoading.value = true
@@ -181,7 +162,6 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    /** Connect and fetch LeetCode stats */
     fun connectLeetCode(username: String) {
         if (username.isBlank()) {
             _error.value = "LeetCode username can't be empty"

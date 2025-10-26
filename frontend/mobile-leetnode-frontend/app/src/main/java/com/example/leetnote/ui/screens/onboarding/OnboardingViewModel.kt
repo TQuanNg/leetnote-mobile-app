@@ -17,8 +17,8 @@ class OnboardingViewModel @Inject constructor(
     val isOnboardingCompleted: StateFlow<Boolean?> =
         repository.isOnboardingCompleted()
             .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000L),
+                scope = viewModelScope, 
+                started = SharingStarted.WhileSubscribed(5000L), 
                 initialValue = null
             )
 

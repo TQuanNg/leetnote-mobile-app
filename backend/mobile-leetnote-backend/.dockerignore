@@ -2,6 +2,5 @@ build/
 .gradle/
 .git
 .gitignore
-Dockerfile
 .env
 *.json

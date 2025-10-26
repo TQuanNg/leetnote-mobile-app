@@ -56,6 +56,7 @@ public class EvaluationController {
                     .orElse(ResponseEntity.notFound().build());
         }
 
+
         if (problemId != null) {
             return submissionService.getLastEvaluationDetail(userId, problemId)
                     .map(ResponseEntity::ok)

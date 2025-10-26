@@ -11,18 +11,24 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Code
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -55,6 +61,12 @@ fun testScreen() {
             backgroundColor = Color.White,
             shadowColor = Color.Gray,
             paddingContent = 16.dp
+        )
+        PatternCard(
+            title = "Two Pointers",
+            icon = Icons.Filled.Code,
+            onClick = { /* handle click */ },
+            modifier = Modifier.fillMaxWidth().padding(16.dp)
         )
     }
 }
@@ -114,6 +126,72 @@ fun CustomCard(
                     descriptionWeight = descriptionWeight,
                     descriptionColor = descriptionColor
                 )
+            }
+        }
+    }
+}
+
+@Composable
+fun PatternCard(
+    title: String,
+    icon: ImageVector,
+    modifier: Modifier = Modifier,
+    cornerRadius: Dp = 12.dp,
+    shadowOffsetX: Dp = 6.dp,
+    shadowOffsetY: Dp = 6.dp,
+    backgroundColor: Color = Color.White,
+    shadowColor: Color = Color.Black,
+    paddingContent: Dp = 16.dp,
+    titleSize: TextUnit = 16.sp,
+    titleWeight: FontWeight = FontWeight.Medium,
+    titleColor: Color = Color.Black,
+    onClick: () -> Unit = {}
+) {
+    Box(modifier = modifier.padding(bottom = 16.dp)) {
+        // Shadow card
+        Card(
+            modifier = Modifier
+                .matchParentSize()
+                .offset(x = shadowOffsetX, y = shadowOffsetY),
+            colors = CardDefaults.cardColors(containerColor = shadowColor),
+            shape = RoundedCornerShape(cornerRadius),
+            elevation = CardDefaults.cardElevation(0.dp)
+        ) {}
+
+        // Foreground card
+        Card(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable { onClick() }
+                .border(2.dp, Color.Black, RoundedCornerShape(cornerRadius)),
+            colors = CardDefaults.cardColors(containerColor = backgroundColor),
+            shape = RoundedCornerShape(cornerRadius),
+            elevation = CardDefaults.cardElevation(0.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingContent),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = titleSize,
+                        fontWeight = titleWeight,
+                        color = titleColor
+                    ),
+                    textAlign = TextAlign.Center,
+                    maxLines = 2
+                )
+                Spacer(modifier = Modifier.weight(1f))
             }
         }
     }

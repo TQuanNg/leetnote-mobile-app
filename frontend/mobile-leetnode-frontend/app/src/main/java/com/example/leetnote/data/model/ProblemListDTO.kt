@@ -9,3 +9,11 @@ data class ProblemListDTO (
     @SerializedName("solved")val isSolved: Boolean,
     @SerializedName("favorite")val isFavorite: Boolean
 )
+
+data class LeetProblem(
+    val id: Long,
+    val title: String,
+    val difficulty: String,
+    val isSolved: Boolean,
+    val isFavorite: Boolean
+)

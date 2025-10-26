@@ -5,10 +5,10 @@ import app.cash.turbine.test
 import com.example.leetnote.data.model.ProblemDetailDTO
 import com.example.leetnote.data.model.SolutionDTO
 import com.example.leetnote.data.model.SubmissionDTO
-import com.example.leetnote.data.repository.EvaluationDetail
-import com.example.leetnote.data.repository.EvaluationDTO
-import com.example.leetnote.data.repository.EvaluationDetailDTO
-import com.example.leetnote.data.repository.EvaluationListItemDTO
+import com.example.leetnote.data.model.EvaluationDetail
+import com.example.leetnote.data.model.EvaluationDTO
+import com.example.leetnote.data.model.EvaluationDetailDTO
+import com.example.leetnote.data.model.EvaluationListItemDTO
 import com.example.leetnote.data.repository.EvaluationRepository
 import com.example.leetnote.data.repository.ProblemRepository
 import io.mockk.coEvery

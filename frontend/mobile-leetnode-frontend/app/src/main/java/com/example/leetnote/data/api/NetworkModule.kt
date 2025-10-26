@@ -55,8 +55,8 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:8080/") // local backend URL
-            //.baseUrl("http://ec2-3-19-215-98.us-east-2.compute.amazonaws.com:8080/")
+            //.baseUrl("http://10.0.2.2:8080/") // local backend URL
+            .baseUrl("http://ec2-3-20-194-184.us-east-2.compute.amazonaws.com:8080/")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

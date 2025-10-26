@@ -3,6 +3,7 @@ package com.example.leetnote.ui.screens.profile
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -35,8 +36,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.ProgressIndicatorDefaults
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -61,6 +60,7 @@ import com.example.leetnote.ui.navigation.Screen
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.navigation.NavController
+import com.example.leetnote.data.model.EvaluationListItemDTO
 
 @Composable
 fun ProfileScreen(
@@ -139,7 +139,7 @@ fun ProfileContent(
     mediumTotal: Int?,
     hardTotal: Int?,
     selectedTabIndex: Int,
-    evaluations: List<com.example.leetnote.data.repository.EvaluationListItemDTO>,
+    evaluations: List<EvaluationListItemDTO>,
     onLeetCodeConfirm: (String) -> Unit,
     onUploadProfileImage: (String) -> Unit,
     onDeleteProfileImage: () -> Unit,
@@ -167,19 +167,11 @@ fun ProfileContent(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Tab row for LeetCode and Evaluations
-        TabRow(selectedTabIndex = selectedTabIndex) {
-            Tab(
-                selected = selectedTabIndex == 0,
-                onClick = { onTabSelected(0) },
-                text = { Text("LeetCode") }
-            )
-            Tab(
-                selected = selectedTabIndex == 1,
-                onClick = { onTabSelected(1) },
-                text = { Text("History") }
-            )
-        }
+        // Neo-brutalism styled tab row
+        NeoBrutalismTabRow(
+            selectedTabIndex = selectedTabIndex,
+            onTabSelected = onTabSelected
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -530,19 +522,6 @@ fun UsernameEditDialog(
     )
 }
 
-@Composable
-fun InDevelopmentDialog(onDismiss: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Feature in Development") },
-        text = { Text("This feature is currently under development. Please check back later!") },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Close")
-            }
-        }
-    )
-}
 
 @Composable
 private fun DifficultyIndicator(
@@ -622,7 +601,7 @@ private fun ProfileImageActionSheet(
 
 @Composable
 fun EvaluationsSection(
-    evaluations: List<com.example.leetnote.data.repository.EvaluationListItemDTO>,
+    evaluations: List<EvaluationListItemDTO>,
     onEvaluationClick: (Long) -> Unit
 ) {
     if (evaluations.isEmpty()) {
@@ -668,7 +647,7 @@ fun EvaluationsSection(
 
 @Composable
 fun EvaluationItem(
-    evaluation: com.example.leetnote.data.repository.EvaluationListItemDTO,
+    evaluation: EvaluationListItemDTO,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     cornerRadius: androidx.compose.ui.unit.Dp = 12.dp,
@@ -736,6 +715,79 @@ fun EvaluationItem(
                     color = Color.Gray
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun NeoBrutalismTabRow(
+    selectedTabIndex: Int,
+    onTabSelected: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val tabs = listOf("LeetCode", "History")
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        tabs.forEachIndexed { index, tab ->
+            NeoBrutalismTab(
+                text = tab,
+                selected = selectedTabIndex == index,
+                onClick = { onTabSelected(index) },
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+@Composable
+fun NeoBrutalismTab(
+    text: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val backgroundColor = if (selected) Color(0xFF7B9EFF) else Color.White
+    val textColor = if (selected) Color.White else Color.Black
+    val shadowColor = if (selected) Color(0xFF5A7CD8) else Color.Gray
+
+    Box(
+        modifier = modifier
+            .height(48.dp)
+    ) {
+        // Tab shadow
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .offset(x = 2.dp, y = 2.dp)
+                .background(
+                    color = shadowColor,
+                    shape = RoundedCornerShape(8.dp)
+                )
+        )
+
+        // Main tab
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .border(2.dp, Color.Black, RoundedCornerShape(8.dp))
+                .background(
+                    color = backgroundColor,
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .clickable { onClick() },
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = textColor
+            )
         }
     }
 }

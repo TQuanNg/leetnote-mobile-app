@@ -1,39 +1,12 @@
 package com.example.leetnote.data.repository
 
 import com.example.leetnote.data.api.LeetnoteApiService
+import com.example.leetnote.data.model.EvaluationDetail
+import com.example.leetnote.data.model.EvaluationDetailDTO
+import com.example.leetnote.data.model.EvaluationListItemDTO
 import com.example.leetnote.data.model.SubmissionDTO
 import javax.inject.Inject
 
-
-data class EvaluationDetail(
-    val id: Long,
-    val version: Int,
-    val evaluation: EvaluationDTO,
-    val createdAt: String
-)
-
-data class EvaluationDTO(
-    val rating: Int,
-    val issue: List<String>,
-    val feedback: List<String>
-)
-
-data class EvaluationDetailDTO (
-    val evaluationId: Long,
-    val problemId: Long,
-    val problemTitle: String,
-    val difficulty: String,
-    val createdAt: String,
-    val evaluation: EvaluationDTO,
-    val solutionText: String
-)
-
-data class EvaluationListItemDTO(
-    val evaluationId: Long,
-    val problemId: Long,
-    val problemTitle: String,
-    val createdAt: String,
-)
 
 class EvaluationRepository @Inject constructor(
     private val api: LeetnoteApiService
@@ -63,10 +36,6 @@ class EvaluationRepository @Inject constructor(
 
     suspend fun getEvaluationById(evaluationId: Long): EvaluationDetailDTO? {
         return getLastEvaluation(evaluationId = evaluationId)
-    }
-
-    suspend fun getLastEvaluationByProblem(problemId: Long): EvaluationDetailDTO? {
-        return getLastEvaluation(problemId = problemId)
     }
 
     suspend fun getAllUserEvaluations(): List<EvaluationListItemDTO> {

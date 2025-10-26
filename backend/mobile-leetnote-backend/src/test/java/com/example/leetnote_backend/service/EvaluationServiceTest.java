@@ -187,7 +187,7 @@ class EvaluationServiceTest {
         evaluationService.createSubmissionWithEvaluation(userId, request);
 
         // Assert: capture deletions
-        ArgumentCaptor<List<Submission>> toDeleteCaptor = ArgumentCaptor.forClass(List.class);
+        ArgumentCaptor<List<Submission>> toDeleteCaptor = ArgumentCaptor.forClass((Class<List<Submission>>) (Class<?>) List.class);
         verify(submissionRepository).deleteAll(toDeleteCaptor.capture());
         List<Submission> toDelete = toDeleteCaptor.getValue();
         assertThat(toDelete).extracting(Submission::getId).containsExactly(104L, 105L);
@@ -305,11 +305,11 @@ class EvaluationServiceTest {
         when(problemRepository.findById(problemId)).thenReturn(Optional.of(p));
 
         // Act
-        List<EvaluationListItemDTO> result = evaluationService.getAllEvaluations(userId, problemId);
+        List<EvaluationListItemDTO> result = evaluationService.getAllEvaluations(userId);
 
         // Assert
         assertEquals(1, result.size());
-        EvaluationListItemDTO item = result.get(0);
+        EvaluationListItemDTO item = result.getFirst();
         assertEquals(problemId, item.getProblemId());
         assertEquals("Two Sum", item.getProblemTitle());
         assertEquals(e1.getCreatedAt(), item.getCreatedAt());
@@ -323,7 +323,7 @@ class EvaluationServiceTest {
         when(evaluationRepository.findBySubmission_UserIdAndSubmission_ProblemIdOrderByCreatedAtDesc(userId, problemId))
                 .thenReturn(Collections.emptyList());
 
-        List<EvaluationListItemDTO> result = evaluationService.getAllEvaluations(userId, problemId);
+        List<EvaluationListItemDTO> result = evaluationService.getAllEvaluations(userId);
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }

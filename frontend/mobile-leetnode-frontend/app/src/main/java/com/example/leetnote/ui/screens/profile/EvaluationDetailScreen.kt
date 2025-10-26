@@ -45,8 +45,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.leetnote.data.model.EvaluationDetailDTO
 import com.example.leetnote.ui.components.CustomCard
-import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -120,7 +120,7 @@ fun EvaluationDetailScreen(
 
 @Composable
 private fun EvaluationDetailContent(
-    evaluationDetail: com.example.leetnote.data.repository.EvaluationDetailDTO,
+    evaluationDetail: EvaluationDetailDTO,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -265,6 +265,7 @@ private fun NeoBrutalismCard(
         // Main Card
         Card(
             modifier = Modifier
+                .fillMaxWidth()
                 .border(2.dp, Color.Black, RoundedCornerShape(12.dp)),
             colors = CardDefaults.cardColors(containerColor = Color.White),
             shape = RoundedCornerShape(12.dp),

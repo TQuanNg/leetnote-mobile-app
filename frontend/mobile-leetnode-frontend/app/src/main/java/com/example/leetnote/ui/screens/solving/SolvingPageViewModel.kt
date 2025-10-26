@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.leetnote.data.model.ProblemDetailDTO
 import com.example.leetnote.data.model.SubmissionDTO
-import com.example.leetnote.data.repository.EvaluationDetail
-import com.example.leetnote.data.repository.EvaluationListItemDTO
+import com.example.leetnote.data.model.EvaluationDetail
+import com.example.leetnote.data.model.EvaluationListItemDTO
 import com.example.leetnote.data.repository.EvaluationRepository
 import com.example.leetnote.data.repository.ProblemRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
