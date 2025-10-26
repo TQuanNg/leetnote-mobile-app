@@ -1,4 +1,4 @@
-package com.example.leetnote.ui.screens.login.token
+package com.example.leetnote.data.auth
 
 interface TokenProvider {
     suspend fun getToken(): String?

@@ -1,7 +1,7 @@
 package com.example.leetnote.data.api
 
-import com.example.leetnote.ui.screens.login.token.TokenProvider
-import com.example.leetnote.ui.screens.login.token.TokenStorage
+import com.example.leetnote.data.auth.TokenProvider
+import com.example.leetnote.data.auth.TokenStorage
 import com.google.firebase.auth.FirebaseAuth
 import dagger.Module
 import dagger.Provides
@@ -14,8 +14,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 /*
-This module tells Hilt how to provide the LeetnoteApiService dependency.
-It uses the RetrofitInstance to create an instance of LeetnoteApiService.
+ * This module tells Hilt how to provide the LeetnoteApiService dependency.
+ * It uses the RetrofitInstance to create an instance of LeetnoteApiService.
  */
 @Module
 @InstallIn(SingletonComponent::class)

@@ -1,7 +1,7 @@
 package com.example.leetnote.data.api
 
-import com.example.leetnote.ui.screens.login.token.TokenProvider
-import com.example.leetnote.ui.screens.login.token.TokenStorage
+import com.example.leetnote.data.auth.TokenProvider
+import com.example.leetnote.data.auth.TokenStorage
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -29,7 +29,7 @@ class AuthInterceptor @Inject constructor(
 
         var response = chain.proceed(request)
 
-        // 2️⃣ Retry once if unauthorized
+        // Retry once if unauthorized
         if (response.code == 401 || response.code == 403) {
             response.close()
             val refreshedToken = runBlocking { refreshToken() }

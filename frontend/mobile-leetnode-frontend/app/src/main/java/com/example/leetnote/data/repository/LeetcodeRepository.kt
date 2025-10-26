@@ -1,6 +1,7 @@
 package com.example.leetnote.data.repository
 
 import com.example.leetnote.data.api.LeetnoteApiService
+import com.example.leetnote.data.model.LeetcodeStatsDTO
 import javax.inject.Inject
 
 class LeetcodeRepository @Inject constructor(
@@ -11,11 +12,3 @@ class LeetcodeRepository @Inject constructor(
         return if (response.isSuccessful) response.body() else null
     }
 }
-
-data class LeetcodeStatsDTO(
-    val username: String,
-    val totalSolved: Int,
-    val easySolved: Int,
-    val mediumSolved: Int,
-    val hardSolved: Int,
-)

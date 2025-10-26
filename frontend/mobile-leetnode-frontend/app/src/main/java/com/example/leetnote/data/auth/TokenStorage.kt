@@ -1,4 +1,4 @@
-package com.example.leetnote.ui.screens.login.token
+package com.example.leetnote.data.auth
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -8,8 +8,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /*
-This class mangages the token whether persited of deleted across app restarts.
-It uses SharedPreferences to persist the token.
+ * This class mangages the token whether persited of deleted across app restarts.
+ * It uses SharedPreferences to persist the token.
  */
 @Singleton
 class TokenStorage @Inject constructor(

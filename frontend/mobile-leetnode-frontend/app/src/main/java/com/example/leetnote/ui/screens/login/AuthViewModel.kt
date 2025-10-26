@@ -13,7 +13,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.leetnote.R
 import com.example.leetnote.data.repository.UserRepository
-import com.example.leetnote.ui.screens.login.token.TokenStorage
+import com.example.leetnote.data.auth.TokenStorage
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException

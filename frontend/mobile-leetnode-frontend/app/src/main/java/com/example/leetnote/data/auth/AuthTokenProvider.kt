@@ -1,4 +1,4 @@
-package com.example.leetnote.ui.screens.login.token
+package com.example.leetnote.data.auth
 
 import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
