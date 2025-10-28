@@ -10,6 +10,11 @@ on:
       - 'backend/mobile-leetnote-backend/**'
     branches: [ "main" ]
 
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
