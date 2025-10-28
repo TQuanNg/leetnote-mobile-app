@@ -16,7 +16,6 @@ public class LeetcodeService {
 
     private final RestTemplate restTemplate;
 
-
     @Cacheable(value = "leetcodeProfiles", key = "#username" )
     public LeetcodeStatsDTO getUserStats(String username) {
         String url = "https://leetcode.com/graphql" + username;
