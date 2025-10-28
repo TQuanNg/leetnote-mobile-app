@@ -284,20 +284,21 @@ class EvaluationServiceTest {
     @Test
     void getAllEvaluations_returnsSingleLatestItem_withProblemTitleAndCreatedAt() {
         // Arrange
+        Submission submission = new Submission();
+        submission.setUserId(userId);
+        submission.setProblemId(problemId);
+
         EvaluationDTO evalDto1 = new EvaluationDTO();
         evalDto1.setRating(4);
         Evaluation e1 = new Evaluation();
+        e1.setId(1L);
+        e1.setSubmission(submission);
         e1.setEvaluation(evalDto1);
         e1.setCreatedAt(LocalDateTime.now());
 
-        EvaluationDTO evalDto2 = new EvaluationDTO();
-        evalDto2.setRating(3);
-        Evaluation e2 = new Evaluation();
-        e2.setEvaluation(evalDto2);
-        e2.setCreatedAt(e1.getCreatedAt().minusMinutes(10));
-
-        when(evaluationRepository.findBySubmission_UserIdAndSubmission_ProblemIdOrderByCreatedAtDesc(userId, problemId))
-                .thenReturn(List.of(e1, e2));
+        // Mock the correct method that getAllEvaluations actually calls
+        when(evaluationRepository.findLatestEvaluationsByUserId(userId))
+                .thenReturn(List.of(e1));
 
         Problem p = new Problem();
         p.setId(problemId);
@@ -310,22 +311,27 @@ class EvaluationServiceTest {
         // Assert
         assertEquals(1, result.size());
         EvaluationListItemDTO item = result.getFirst();
+        assertEquals(1L, item.getEvaluationId());
         assertEquals(problemId, item.getProblemId());
         assertEquals("Two Sum", item.getProblemTitle());
         assertEquals(e1.getCreatedAt(), item.getCreatedAt());
 
-        verify(evaluationRepository).findBySubmission_UserIdAndSubmission_ProblemIdOrderByCreatedAtDesc(userId, problemId);
+        verify(evaluationRepository).findLatestEvaluationsByUserId(userId);
         verify(problemRepository).findById(problemId);
     }
 
     @Test
     void getAllEvaluations_returnsEmptyList_whenNoEvaluations() {
-        when(evaluationRepository.findBySubmission_UserIdAndSubmission_ProblemIdOrderByCreatedAtDesc(userId, problemId))
+        // Mock the correct method
+        when(evaluationRepository.findLatestEvaluationsByUserId(userId))
                 .thenReturn(Collections.emptyList());
 
         List<EvaluationListItemDTO> result = evaluationService.getAllEvaluations(userId);
         assertNotNull(result);
         assertTrue(result.isEmpty());
+
+        verify(evaluationRepository).findLatestEvaluationsByUserId(userId);
+        // No need to verify problemRepository since no evaluations exist
     }
 
     private Submission submission(Long id) {
