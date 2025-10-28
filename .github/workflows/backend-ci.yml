@@ -50,3 +50,4 @@ jobs:
         name: Gradle Tests
         path: build/test-results/test/*.xml
         reporter: java-junit
+
