@@ -36,4 +36,8 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+	reports {
+		junitXml.required.set(true)  // for GitHub Actions / dorny/test-reporter
+		html.required.set(true)      // optional human-readable HTML report
+	}
 }
