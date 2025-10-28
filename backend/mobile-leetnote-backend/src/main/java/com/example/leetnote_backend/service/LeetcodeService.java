@@ -71,3 +71,4 @@ public class LeetcodeService {
         return new LeetcodeStatsDTO(username, total, easy, medium, hard);
     }
 }
+
