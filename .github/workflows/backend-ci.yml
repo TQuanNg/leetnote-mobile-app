@@ -2,7 +2,7 @@ name: Backend CI/CD
 
 on:
   push:
-    path:
+    paths:
       - 'backend/mobile-leetnote-backend/**'
     branches: [ "main" ]
   pull_request:
