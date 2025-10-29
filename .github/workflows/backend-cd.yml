@@ -1,0 +1,45 @@
+name: Backend CI/CD
+
+on:
+  push:
+    path:
+      - 'backend/mobile-leetnote-backend/**'
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend/mobile-leetnote-backend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t leetnote-backend .
+          docker tag leetnote-backend ${{ secrets.DOCKERHUB_USERNAME }}/leetnote-backend:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/leetnote-backend:latest
+
+      - name: Deploy on EC2 via SSH
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            cd leetnote-backend
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/leetnote-backend:latest
+            docker stop leetnote-backend || true
+            docker rm leetnote-backend || true
+            docker run -d --name leetnote-backend -p 8080:8080 --env-file .env ${{ secrets.DOCKERHUB_USERNAME }}/leetnote-backend:latest
+
