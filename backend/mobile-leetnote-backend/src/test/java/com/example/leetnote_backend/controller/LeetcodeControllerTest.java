@@ -5,6 +5,7 @@ import com.example.leetnote_backend.config.UserPrincipal;
 import com.example.leetnote_backend.model.DTO.LeetcodeStatsDTO;
 import com.example.leetnote_backend.service.LeetcodeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,6 +21,7 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -157,11 +159,12 @@ public class LeetcodeControllerTest {
                 .thenThrow(new RuntimeException("User not found: " + username));
 
         // Act & Assert
-        mockMvc.perform(post("/api/leetcode/username")
+        assertThrows(ServletException.class, () ->
+                mockMvc.perform(post("/api/leetcode/username")
                         .with(authenticated())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().is5xxServerError());
+        );
     }
 
     @Test
@@ -170,10 +173,10 @@ public class LeetcodeControllerTest {
         when(leetcodeService.refreshStats(1L))
                 .thenThrow(new RuntimeException("No LeetCode profile found for user. Please set username first."));
 
-        // Act & Assert
-        mockMvc.perform(post("/api/leetcode/refresh")
+        assertThrows(ServletException.class, () ->
+                mockMvc.perform(post("/api/leetcode/refresh")
                         .with(authenticated()))
-                .andExpect(status().is5xxServerError());
+        );
     }
 
     @Test

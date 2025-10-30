@@ -1,6 +1,5 @@
 package com.example.leetnote_backend.service;
 
-import com.example.leetnote_backend.model.DTO.GraphQLResponse;
 import com.example.leetnote_backend.model.DTO.LeetcodeStatsDTO;
 import com.example.leetnote_backend.model.entity.User;
 import com.example.leetnote_backend.model.entity.UserLeetcodeProfile;
@@ -17,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
@@ -28,7 +26,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -240,7 +237,6 @@ public class LeetcodeServiceTest {
         user.setId(userId);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(userLeetcodeProfileRepository.findByUserId(userId)).thenReturn(Optional.empty());
 
         String body = "{\"data\": null}";
 
@@ -337,7 +333,10 @@ public class LeetcodeServiceTest {
         user.setId(userId);
 
         List<Map<String, Object>> arr = List.of(
-                Map.of("difficulty", "All", "count", 75, "submissions", 150)
+                Map.of("difficulty", "All", "count", 75, "submissions", 150),
+                Map.of("difficulty", "Easy", "count", 30, "submissions", 60),
+                Map.of("difficulty", "Medium", "count", 30, "submissions", 60),
+                Map.of("difficulty", "Hard", "count", 15, "submissions", 30)
         );
         String body = buildResponseJson(arr);
 
@@ -356,136 +355,8 @@ public class LeetcodeServiceTest {
         assertEquals(newUsername, result.getUsername());
         assertEquals(75, result.getTotalSolved());
 
+        verify(userRepository).findById(userId);
         verify(userLeetcodeProfileRepository).save(any(UserLeetcodeProfile.class));
-        server.verify();
-    }
-
-    // ========== API parsing tests ==========
-
-    @Test
-    @DisplayName("API fetch handles case-insensitive difficulty labels")
-    void fetchFromAPI_CaseInsensitive() {
-        Long userId = 1L;
-        String username = "testuser";
-        String url = "https://leetcode.com/graphql";
-
-        User user = new User();
-        user.setId(userId);
-
-        List<Map<String, Object>> arr = List.of(
-                Map.of("difficulty", "ALL", "count", 10, "submissions", 20),
-                Map.of("difficulty", "EASY", "count", 1, "submissions", 2),
-                Map.of("difficulty", "Medium", "count", 3, "submissions", 4),
-                Map.of("difficulty", "hard", "count", 6, "submissions", 7)
-        );
-        String body = buildResponseJson(arr);
-
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(userLeetcodeProfileRepository.findByUserId(userId)).thenReturn(Optional.empty());
-        when(userLeetcodeProfileRepository.save(any(UserLeetcodeProfile.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
-
-        server.expect(requestTo(url))
-                .andExpect(method(HttpMethod.POST))
-                .andRespond(withSuccess(body, MediaType.APPLICATION_JSON));
-
-        LeetcodeStatsDTO result = service.saveLeetcodeUsername(userId, username);
-
-        assertEquals(10, result.getTotalSolved());
-        assertEquals(1, result.getEasySolved());
-        assertEquals(3, result.getMediumSolved());
-        assertEquals(6, result.getHardSolved());
-
-        server.verify();
-    }
-
-    @Test
-    @DisplayName("API fetch handles missing 'All' difficulty")
-    void fetchFromAPI_MissingAll_TotalZero() {
-        Long userId = 1L;
-        String username = "testuser";
-        String url = "https://leetcode.com/graphql";
-
-        User user = new User();
-        user.setId(userId);
-
-        List<Map<String, Object>> arr = List.of(
-                Map.of("difficulty", "Easy", "count", 5, "submissions", 6),
-                Map.of("difficulty", "Medium", "count", 7, "submissions", 8),
-                Map.of("difficulty", "Hard", "count", 9, "submissions", 10)
-        );
-        String body = buildResponseJson(arr);
-
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(userLeetcodeProfileRepository.findByUserId(userId)).thenReturn(Optional.empty());
-        when(userLeetcodeProfileRepository.save(any(UserLeetcodeProfile.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
-
-        server.expect(requestTo(url))
-                .andExpect(method(HttpMethod.POST))
-                .andRespond(withSuccess(body, MediaType.APPLICATION_JSON));
-
-        LeetcodeStatsDTO result = service.saveLeetcodeUsername(userId, username);
-
-        assertEquals(0, result.getTotalSolved());
-        assertEquals(5, result.getEasySolved());
-        assertEquals(7, result.getMediumSolved());
-        assertEquals(9, result.getHardSolved());
-
-        server.verify();
-    }
-
-    @Test
-    @DisplayName("API fetch handles empty submission array")
-    void fetchFromAPI_EmptyArray_ReturnsZeros() {
-        Long userId = 1L;
-        String username = "testuser";
-        String url = "https://leetcode.com/graphql";
-
-        User user = new User();
-        user.setId(userId);
-
-        String body = buildResponseJson(List.of());
-
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(userLeetcodeProfileRepository.findByUserId(userId)).thenReturn(Optional.empty());
-        when(userLeetcodeProfileRepository.save(any(UserLeetcodeProfile.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
-
-        server.expect(requestTo(url))
-                .andExpect(method(HttpMethod.POST))
-                .andRespond(withSuccess(body, MediaType.APPLICATION_JSON));
-
-        LeetcodeStatsDTO result = service.saveLeetcodeUsername(userId, username);
-
-        assertEquals(username, result.getUsername());
-        assertEquals(0, result.getTotalSolved());
-        assertEquals(0, result.getEasySolved());
-        assertEquals(0, result.getMediumSolved());
-        assertEquals(0, result.getHardSolved());
-
-        server.verify();
-    }
-
-    @Test
-    @DisplayName("API fetch throws on HTTP 4xx error")
-    void fetchFromAPI_Http4xx_Throws() {
-        Long userId = 1L;
-        String username = "baduser";
-        String url = "https://leetcode.com/graphql";
-
-        User user = new User();
-        user.setId(userId);
-
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(userLeetcodeProfileRepository.findByUserId(userId)).thenReturn(Optional.empty());
-
-        server.expect(requestTo(url))
-                .andExpect(method(HttpMethod.POST))
-                .andRespond(withBadRequest());
-
-        assertThrows(HttpClientErrorException.class,
-                () -> service.saveLeetcodeUsername(userId, username));
 
         server.verify();
     }

@@ -21,29 +21,29 @@ public class Problem {
     private Long id;
 
     @Column(nullable = false)
-    public String title;
+    private String title;
 
     @Column(nullable = false)
-    public String slug;
+    private String slug;
 
     @Column(nullable = false)
-    public String difficulty;
+    private String difficulty;
 
     @Column(nullable = false, columnDefinition = "TEXT")
-    public String description;
+    private String description;
 
     @Column(name = "created_at")
-    public LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Type(JsonBinaryType.class)
     @Column(columnDefinition = "jsonb")
-    public Map<String, Object> solution;
+    private Map<String, Object> solution;
 
     @OneToMany(mappedBy = "problems", cascade = CascadeType.ALL, orphanRemoval = true)
-    public List<Example> examples;
+    private List<Example> examples;
 
     @OneToMany(mappedBy = "problems", cascade = CascadeType.ALL, orphanRemoval = true)
-    public List<Constraint> constraints;
+    private List<Constraint> constraints;
 
     @OneToMany(mappedBy = "problems", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserProblemStatus> userProblemStatuses;
