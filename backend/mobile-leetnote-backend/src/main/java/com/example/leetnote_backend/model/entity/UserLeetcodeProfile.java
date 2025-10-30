@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -40,11 +42,10 @@ public class UserLeetcodeProfile {
     @Column(name = "hard_solved")
     public int hardSolved;
 
-    @Column(name = "submission_calendar", columnDefinition = "jsonb")
-    @Convert(converter = JsonToMapConverter.class)
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "submission_calendar")
     public Map<String, Integer> submissionCalendar;
 
     @Column(name = "last_updated")
     public LocalDateTime lastUpdated;
 }
-

@@ -4,6 +4,7 @@ import com.example.leetnote_backend.config.FirebaseAuthenticationFilter;
 import com.example.leetnote_backend.config.UserPrincipal;
 import com.example.leetnote_backend.model.DTO.LeetcodeStatsDTO;
 import com.example.leetnote_backend.service.LeetcodeService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,10 +20,10 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(LeetcodeController.class)
@@ -31,6 +32,9 @@ public class LeetcodeControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @MockitoBean
     private LeetcodeService leetcodeService;
@@ -49,19 +53,18 @@ public class LeetcodeControllerTest {
     }
 
     @Test
-    void getUserStats_ReturnsLeetcodeStats_WhenUserExists() throws Exception {
+    void getUserProfile_ReturnsLeetcodeStats_WhenProfileExists() throws Exception {
         // Arrange
-        String username = "testuser";
-        LeetcodeStatsDTO expectedStats = new LeetcodeStatsDTO(username, 100, 40, 35, 25);
+        LeetcodeStatsDTO expectedStats = new LeetcodeStatsDTO("testuser", 100, 40, 35, 25);
 
-        when(leetcodeService.getUserStats(username)).thenReturn(expectedStats);
+        when(leetcodeService.getUserStats(1L)).thenReturn(expectedStats);
 
         // Act & Assert
-        mockMvc.perform(get("/api/leetcode/{username}", username)
+        mockMvc.perform(get("/api/leetcode/profile")
                         .with(authenticated()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.username").value(username))
+                .andExpect(jsonPath("$.username").value("testuser"))
                 .andExpect(jsonPath("$.totalSolved").value(100))
                 .andExpect(jsonPath("$.easySolved").value(40))
                 .andExpect(jsonPath("$.mediumSolved").value(35))
@@ -69,87 +72,125 @@ public class LeetcodeControllerTest {
     }
 
     @Test
-    void getUserStats_ReturnsZeroStats_WhenUserHasNoSubmissions() throws Exception {
+    void getUserProfile_Returns404_WhenProfileNotFound() throws Exception {
         // Arrange
-        String username = "newuser";
-        LeetcodeStatsDTO expectedStats = new LeetcodeStatsDTO(username, 0, 0, 0, 0);
-
-        when(leetcodeService.getUserStats(username)).thenReturn(expectedStats);
+        when(leetcodeService.getUserStats(1L)).thenReturn(null);
 
         // Act & Assert
-        mockMvc.perform(get("/api/leetcode/{username}", username)
+        mockMvc.perform(get("/api/leetcode/profile")
+                        .with(authenticated()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void setLeetcodeUsername_ReturnsStats_WhenSuccessful() throws Exception {
+        // Arrange
+        String username = "newuser";
+        LeetcodeStatsDTO expectedStats = new LeetcodeStatsDTO(username, 50, 20, 20, 10);
+        LeetcodeController.SetUsernameRequest request = new LeetcodeController.SetUsernameRequest();
+        request.setUsername(username);
+
+        when(leetcodeService.saveLeetcodeUsername(eq(1L), eq(username))).thenReturn(expectedStats);
+
+        // Act & Assert
+        mockMvc.perform(post("/api/leetcode/username")
+                        .with(authenticated())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value(username))
+                .andExpect(jsonPath("$.totalSolved").value(50))
+                .andExpect(jsonPath("$.easySolved").value(20))
+                .andExpect(jsonPath("$.mediumSolved").value(20))
+                .andExpect(jsonPath("$.hardSolved").value(10));
+    }
+
+    @Test
+    void updateLeetcodeUsername_ReturnsNewStats_WhenSuccessful() throws Exception {
+        // Arrange
+        String newUsername = "updateduser";
+        LeetcodeStatsDTO expectedStats = new LeetcodeStatsDTO(newUsername, 150, 60, 55, 35);
+        LeetcodeController.SetUsernameRequest request = new LeetcodeController.SetUsernameRequest();
+        request.setUsername(newUsername);
+
+        when(leetcodeService.updateLeetcodeUsername(eq(1L), eq(newUsername))).thenReturn(expectedStats);
+
+        // Act & Assert
+        mockMvc.perform(put("/api/leetcode/username")
+                        .with(authenticated())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value(newUsername))
+                .andExpect(jsonPath("$.totalSolved").value(150))
+                .andExpect(jsonPath("$.easySolved").value(60))
+                .andExpect(jsonPath("$.mediumSolved").value(55))
+                .andExpect(jsonPath("$.hardSolved").value(35));
+    }
+
+    @Test
+    void refreshStats_ReturnsUpdatedStats_WhenSuccessful() throws Exception {
+        // Arrange
+        LeetcodeStatsDTO expectedStats = new LeetcodeStatsDTO("testuser", 105, 42, 36, 27);
+
+        when(leetcodeService.refreshStats(1L)).thenReturn(expectedStats);
+
+        // Act & Assert
+        mockMvc.perform(post("/api/leetcode/refresh")
                         .with(authenticated()))
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.username").value(username))
+                .andExpect(jsonPath("$.username").value("testuser"))
+                .andExpect(jsonPath("$.totalSolved").value(105))
+                .andExpect(jsonPath("$.easySolved").value(42))
+                .andExpect(jsonPath("$.mediumSolved").value(36))
+                .andExpect(jsonPath("$.hardSolved").value(27));
+    }
+
+    @Test
+    void setLeetcodeUsername_Returns500_WhenLeetcodeUserNotFound() throws Exception {
+        // Arrange
+        String username = "nonexistentuser";
+        LeetcodeController.SetUsernameRequest request = new LeetcodeController.SetUsernameRequest();
+        request.setUsername(username);
+
+        when(leetcodeService.saveLeetcodeUsername(eq(1L), eq(username)))
+                .thenThrow(new RuntimeException("User not found: " + username));
+
+        // Act & Assert
+        mockMvc.perform(post("/api/leetcode/username")
+                        .with(authenticated())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().is5xxServerError());
+    }
+
+    @Test
+    void refreshStats_Returns500_WhenNoProfileExists() throws Exception {
+        // Arrange
+        when(leetcodeService.refreshStats(1L))
+                .thenThrow(new RuntimeException("No LeetCode profile found for user. Please set username first."));
+
+        // Act & Assert
+        mockMvc.perform(post("/api/leetcode/refresh")
+                        .with(authenticated()))
+                .andExpect(status().is5xxServerError());
+    }
+
+    @Test
+    void getUserProfile_WithZeroStats_ReturnsCorrectly() throws Exception {
+        // Arrange
+        LeetcodeStatsDTO expectedStats = new LeetcodeStatsDTO("newuser", 0, 0, 0, 0);
+
+        when(leetcodeService.getUserStats(1L)).thenReturn(expectedStats);
+
+        // Act & Assert
+        mockMvc.perform(get("/api/leetcode/profile")
+                        .with(authenticated()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("newuser"))
                 .andExpect(jsonPath("$.totalSolved").value(0))
                 .andExpect(jsonPath("$.easySolved").value(0))
                 .andExpect(jsonPath("$.mediumSolved").value(0))
                 .andExpect(jsonPath("$.hardSolved").value(0));
-    }
-
-    @Test
-    void getUserStats_Returns500_WhenUserNotFound() throws Exception {
-        // Arrange
-        String username = "nonexistentuser";
-        when(leetcodeService.getUserStats(username))
-                .thenThrow(new RuntimeException("User not found: " + username));
-
-        // Act & Assert
-        Exception exception = assertThrows(Exception.class, () ->
-                mockMvc.perform(get("/api/leetcode/{username}", username)
-                                .with(authenticated()))
-                        .andReturn()
-        );
-
-        // The exception thrown by MockMvc will be a ServletException wrapping your RuntimeException
-        assertTrue(exception.getMessage().contains("User not found: nonexistentuser"));
-    }
-
-    @Test
-    void getUserStats_WithAuthentication_Returns200() throws Exception {
-        // Arrange - Controller requires @AuthenticationPrincipal, so supply a principal
-        String username = "testuser";
-        LeetcodeStatsDTO expectedStats = new LeetcodeStatsDTO(username, 50, 20, 20, 10);
-
-        when(leetcodeService.getUserStats(username)).thenReturn(expectedStats);
-
-        // Act & Assert
-        mockMvc.perform(get("/api/leetcode/{username}", username)
-                        .with(authenticated()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value(username));
-    }
-
-    @Test
-    void getUserStats_HandlesSpecialCharactersInUsername() throws Exception {
-        // Arrange
-        String username = "user123";  // Using simpler username to avoid URL encoding issues
-        LeetcodeStatsDTO expectedStats = new LeetcodeStatsDTO(username, 50, 20, 20, 10);
-
-        when(leetcodeService.getUserStats(username)).thenReturn(expectedStats);
-
-        // Act & Assert
-        mockMvc.perform(get("/api/leetcode/{username}", username)
-                        .with(authenticated()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value(username))
-                .andExpect(jsonPath("$.totalSolved").value(50));
-    }
-
-    @Test
-    void getUserStats_HandlesRegularUsername() throws Exception {
-        // Arrange
-        String username = "regularuser"; // Using normal length username
-        LeetcodeStatsDTO expectedStats = new LeetcodeStatsDTO(username, 200, 80, 70, 50);
-
-        when(leetcodeService.getUserStats(username)).thenReturn(expectedStats);
-
-        // Act & Assert
-        mockMvc.perform(get("/api/leetcode/{username}", username)
-                        .with(authenticated()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value(username))
-                .andExpect(jsonPath("$.totalSolved").value(200));
     }
 }

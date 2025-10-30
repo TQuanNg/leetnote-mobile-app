@@ -2,12 +2,16 @@ package com.example.leetnote_backend.service;
 
 import com.example.leetnote_backend.model.DTO.GraphQLResponse;
 import com.example.leetnote_backend.model.DTO.LeetcodeStatsDTO;
+import com.example.leetnote_backend.model.entity.User;
+import com.example.leetnote_backend.model.entity.UserLeetcodeProfile;
+import com.example.leetnote_backend.repository.UserLeetcodeProfileRepository;
+import com.example.leetnote_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
@@ -15,10 +19,80 @@ import java.util.Map;
 public class LeetcodeService {
 
     private final RestTemplate restTemplate;
+    private final UserLeetcodeProfileRepository userLeetcodeProfileRepository;
+    private final UserRepository userRepository;
 
-    @Cacheable(value = "leetcodeProfiles", key = "#username" )
-    public LeetcodeStatsDTO getUserStats(String username) {
-        String url = "https://leetcode.com/graphql" + username;
+    /**
+     * Get user's LeetCode stats from database (if exists), otherwise return null
+     */
+    public LeetcodeStatsDTO getUserStats(Long userId) {
+        return userLeetcodeProfileRepository.findByUserId(userId)
+                .map(this::convertToDTO)
+                .orElse(null);
+    }
+
+    /**
+     * Save or update LeetCode username for a user and fetch fresh stats from LeetCode API
+     */
+    public LeetcodeStatsDTO saveLeetcodeUsername(Long userId, String leetcodeUsername) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+
+        // Fetch fresh stats from LeetCode API
+        LeetcodeStatsDTO stats = fetchStatsFromLeetcodeAPI(leetcodeUsername);
+
+        // Find existing profile or create new one
+        UserLeetcodeProfile profile = userLeetcodeProfileRepository.findByUserId(userId)
+                .orElse(new UserLeetcodeProfile());
+
+        // Update profile
+        profile.setUser(user);
+        profile.setUsername(leetcodeUsername);
+        profile.setTotalSolved(stats.getTotalSolved());
+        profile.setEasySolved(stats.getEasySolved());
+        profile.setMediumSolved(stats.getMediumSolved());
+        profile.setHardSolved(stats.getHardSolved());
+        profile.setLastUpdated(LocalDateTime.now());
+
+        userLeetcodeProfileRepository.save(profile);
+
+        return stats;
+    }
+
+    /**
+     * Refresh stats from LeetCode API for existing user
+     */
+    public LeetcodeStatsDTO refreshStats(Long userId) {
+        UserLeetcodeProfile profile = userLeetcodeProfileRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("No LeetCode profile found for user. Please set username first."));
+
+        // Fetch fresh stats from LeetCode API
+        LeetcodeStatsDTO stats = fetchStatsFromLeetcodeAPI(profile.getUsername());
+
+        // Update profile
+        profile.setTotalSolved(stats.getTotalSolved());
+        profile.setEasySolved(stats.getEasySolved());
+        profile.setMediumSolved(stats.getMediumSolved());
+        profile.setHardSolved(stats.getHardSolved());
+        profile.setLastUpdated(LocalDateTime.now());
+
+        userLeetcodeProfileRepository.save(profile);
+
+        return stats;
+    }
+
+    /**
+     * Update LeetCode username (change it)
+     */
+    public LeetcodeStatsDTO updateLeetcodeUsername(Long userId, String newUsername) {
+        return saveLeetcodeUsername(userId, newUsername);
+    }
+
+    /**
+     * Fetch stats from LeetCode GraphQL API
+     */
+    private LeetcodeStatsDTO fetchStatsFromLeetcodeAPI(String username) {
+        String url = "https://leetcode.com/graphql";
         String query = """
             query getUserProfile($username: String!) {
               matchedUser(username: $username) {
@@ -69,5 +143,17 @@ public class LeetcodeService {
 
         return new LeetcodeStatsDTO(username, total, easy, medium, hard);
     }
-}
 
+    /**
+     * Convert UserLeetcodeProfile entity to DTO
+     */
+    private LeetcodeStatsDTO convertToDTO(UserLeetcodeProfile profile) {
+        return new LeetcodeStatsDTO(
+                profile.getUsername(),
+                profile.getTotalSolved(),
+                profile.getEasySolved(),
+                profile.getMediumSolved(),
+                profile.getHardSolved()
+        );
+    }
+}

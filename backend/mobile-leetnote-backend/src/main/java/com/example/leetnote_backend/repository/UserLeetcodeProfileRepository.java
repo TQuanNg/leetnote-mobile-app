@@ -10,4 +10,8 @@ import java.util.Optional;
 public interface UserLeetcodeProfileRepository extends JpaRepository<UserLeetcodeProfile, Long> {
     @Override
     Optional<UserLeetcodeProfile> findById(Long aLong);
+
+    Optional<UserLeetcodeProfile> findByUserId(Long userId);
+
+    Optional<UserLeetcodeProfile> findByUsername(String username);
 }

@@ -85,8 +85,19 @@ interface LeetnoteApiService {
     @GET("evaluations/all")
     suspend fun getAllUserEvaluations(): List<EvaluationListItemDTO>
 
-    @GET("api/leetcode/{username}")
-    suspend fun getUserStats(
-        @Path("username") username: String
+    @GET("api/leetcode/profile")
+    suspend fun getLeetcodeProfile(): Response<LeetcodeStatsDTO>
+
+    @POST("api/leetcode/username")
+    suspend fun setLeetcodeUsername(
+        @Body request: SetUsernameRequest
     ): Response<LeetcodeStatsDTO>
+
+    @PUT("api/leetcode/username")
+    suspend fun updateLeetcodeUsername(
+        @Body request: SetUsernameRequest
+    ): Response<LeetcodeStatsDTO>
+
+    @POST("api/leetcode/refresh")
+    suspend fun refreshLeetcodeStats(): Response<LeetcodeStatsDTO>
 }

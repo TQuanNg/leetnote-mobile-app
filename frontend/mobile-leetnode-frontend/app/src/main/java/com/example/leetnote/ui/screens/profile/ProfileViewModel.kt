@@ -51,7 +51,7 @@ class ProfileViewModel @Inject constructor(
 
     init {
         loadUserProfile()
-        // loadAllEvaluations()
+        loadLeetCodeProfile()
     }
 
     fun selectTab(tabIndex: Int) {
@@ -162,7 +162,41 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun connectLeetCode(username: String) {
+    /**
+     * Load user's stored LeetCode profile from database
+     * Called on init to check if user has already connected their LeetCode account
+     */
+    fun loadLeetCodeProfile() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
+            try {
+                val stats = leetcodeRepository.getLeetcodeProfile()
+                if (stats != null) {
+                    _uiState.update {
+                        it.copy(
+                            leetcodeUsername = stats.username,
+                            solvedCount = stats.totalSolved,
+                            solvedEasy = stats.easySolved,
+                            solvedMedium = stats.mediumSolved,
+                            solvedHard = stats.hardSolved,
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                // Silently fail if no profile exists yet
+                _error.value = null
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    /**
+     * Set LeetCode username for the first time
+     * This will fetch fresh stats from LeetCode API and save to database
+     */
+    fun setLeetCodeUsername(username: String) {
         if (username.isBlank()) {
             _error.value = "LeetCode username can't be empty"
             return
@@ -171,9 +205,9 @@ class ProfileViewModel @Inject constructor(
             _isLoading.value = true
             _error.value = null
             try {
-                val stats = leetcodeRepository.getUserStats(username)
+                val stats = leetcodeRepository.setLeetcodeUsername(username)
                 if (stats == null) {
-                    _error.value = "Failed to fetch LeetCode stats"
+                    _error.value = "Failed to fetch LeetCode stats. Please check the username."
                 } else {
                     _uiState.update {
                         it.copy(
@@ -186,7 +220,73 @@ class ProfileViewModel @Inject constructor(
                     }
                 }
             } catch (e: Exception) {
-                _error.value = e.message
+                _error.value = "Error: ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    /**
+     * Update LeetCode username to a new one
+     * This will fetch fresh stats for the new username and save to database
+     */
+    fun updateLeetCodeUsername(username: String) {
+        if (username.isBlank()) {
+            _error.value = "LeetCode username can't be empty"
+            return
+        }
+        viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
+            try {
+                val stats = leetcodeRepository.updateLeetcodeUsername(username)
+                if (stats == null) {
+                    _error.value = "Failed to update LeetCode username. Please check the username."
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            leetcodeUsername = stats.username,
+                            solvedCount = stats.totalSolved,
+                            solvedEasy = stats.easySolved,
+                            solvedMedium = stats.mediumSolved,
+                            solvedHard = stats.hardSolved,
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                _error.value = "Error: ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    /**
+     * Refresh stats from LeetCode API for existing username
+     * Use this when user wants to manually update their stats
+     */
+    fun refreshLeetCodeStats() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
+            try {
+                val stats = leetcodeRepository.refreshLeetcodeStats()
+                if (stats == null) {
+                    _error.value = "Failed to refresh LeetCode stats"
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            leetcodeUsername = stats.username,
+                            solvedCount = stats.totalSolved,
+                            solvedEasy = stats.easySolved,
+                            solvedMedium = stats.mediumSolved,
+                            solvedHard = stats.hardSolved,
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                _error.value = "Error: ${e.message}"
             } finally {
                 _isLoading.value = false
             }

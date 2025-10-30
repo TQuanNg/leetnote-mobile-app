@@ -102,7 +102,9 @@ fun ProfileScreen(
             hardTotal = 876,
             selectedTabIndex = state.selectedTabIndex,
             evaluations = state.evaluations,
-            onLeetCodeConfirm = { viewModel.connectLeetCode(it) },
+            onLeetCodeConnect = { viewModel.setLeetCodeUsername(it) },
+            onLeetCodeUpdate = { viewModel.updateLeetCodeUsername(it) },
+            onLeetCodeRefresh = { viewModel.refreshLeetCodeStats() },
             onUploadProfileImage = { newUrl -> viewModel.uploadProfileImage(newUrl) },
             onDeleteProfileImage = { viewModel.deleteProfileImage() },
             onUsernameChange = { newUsername -> viewModel.updateUsername(newUsername) },
@@ -140,7 +142,9 @@ fun ProfileContent(
     hardTotal: Int?,
     selectedTabIndex: Int,
     evaluations: List<EvaluationListItemDTO>,
-    onLeetCodeConfirm: (String) -> Unit,
+    onLeetCodeConnect: (String) -> Unit,
+    onLeetCodeUpdate: (String) -> Unit,
+    onLeetCodeRefresh: () -> Unit,
     onUploadProfileImage: (String) -> Unit,
     onDeleteProfileImage: () -> Unit,
     onUsernameChange: (String) -> Unit,
@@ -181,7 +185,7 @@ fun ProfileContent(
                 // LeetCode content
                 if (leetcodeUsername == null) {
                     LeetCodeConnectionSection(
-                        onLeetCodeConfirm = onLeetCodeConfirm
+                        onLeetCodeConnect = onLeetCodeConnect
                     )
                 } else {
                     LeetCodeStatsSection(
@@ -192,7 +196,9 @@ fun ProfileContent(
                         solvedHard = solvedHard,
                         easyTotal = easyTotal,
                         mediumTotal = mediumTotal,
-                        hardTotal = hardTotal
+                        hardTotal = hardTotal,
+                        onLeetCodeUpdate = onLeetCodeUpdate,
+                        onLeetCodeRefresh = onLeetCodeRefresh
                     )
                 }
             }
@@ -347,7 +353,7 @@ private fun UserInfoCard(
 
 @Composable
 private fun LeetCodeConnectionSection(
-    onLeetCodeConfirm: (String) -> Unit
+    onLeetCodeConnect: (String) -> Unit
 ) {
     var input by remember { mutableStateOf("") }
 
@@ -361,8 +367,8 @@ private fun LeetCodeConnectionSection(
     Spacer(modifier = Modifier.height(8.dp))
 
     ShadowButton(
-        text = "Confirm",
-        onClick = { onLeetCodeConfirm(input) },
+        text = "Connect",
+        onClick = { onLeetCodeConnect(input) },
         modifier = Modifier.fillMaxWidth(),
         foregroundColor = Color(0xFF7B9EFF),
         contentColor = Color.White
@@ -378,8 +384,12 @@ private fun LeetCodeStatsSection(
     solvedHard: Int?,
     easyTotal: Int?,
     mediumTotal: Int?,
-    hardTotal: Int?
+    hardTotal: Int?,
+    onLeetCodeUpdate: (String) -> Unit,
+    onLeetCodeRefresh: () -> Unit
 ) {
+    var showUpdateDialog by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -407,11 +417,27 @@ private fun LeetCodeStatsSection(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.padding(20.dp)
             ) {
-                Text(
-                    text = "LeetCode: $leetcodeUsername",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "LeetCode: $leetcodeUsername",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Row {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Update username",
+                            modifier = Modifier
+                                .size(20.dp)
+                                .clickable { showUpdateDialog = true }
+                        )
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -427,8 +453,29 @@ private fun LeetCodeStatsSection(
                     mediumTotal = mediumTotal,
                     hardTotal = hardTotal
                 )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                ShadowButton(
+                    text = "Refresh Stats",
+                    onClick = onLeetCodeRefresh,
+                    modifier = Modifier.fillMaxWidth(),
+                    foregroundColor = Color(0xFF7B9EFF),
+                    contentColor = Color.White
+                )
             }
         }
+    }
+
+    if (showUpdateDialog) {
+        LeetCodeUsernameUpdateDialog(
+            currentUsername = leetcodeUsername,
+            onDismiss = { showUpdateDialog = false },
+            onUpdate = { newUsername ->
+                onLeetCodeUpdate(newUsername)
+                showUpdateDialog = false
+            }
+        )
     }
 }
 
@@ -522,6 +569,42 @@ fun UsernameEditDialog(
     )
 }
 
+@Composable
+fun LeetCodeUsernameUpdateDialog(
+    currentUsername: String,
+    onDismiss: () -> Unit,
+    onUpdate: (String) -> Unit
+) {
+    var newUsername by remember { mutableStateOf(currentUsername) }
+
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = { Text("Update LeetCode Username") },
+        text = {
+            OutlinedTextField(
+                value = newUsername,
+                onValueChange = { newUsername = it },
+                label = { Text("LeetCode Username") },
+                singleLine = true
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    onUpdate(newUsername)
+                    onDismiss()
+                }
+            ) {
+                Text("Update")
+            }
+        },
+        dismissButton = {
+            Button(onClick = { onDismiss() }) {
+                Text("Cancel")
+            }
+        }
+    )
+}
 
 @Composable
 private fun DifficultyIndicator(
@@ -811,7 +894,9 @@ fun ProfileScreenPreview() {
             hardTotal = 100,
             selectedTabIndex = 0,
             evaluations = listOf(),
-            onLeetCodeConfirm = {},
+            onLeetCodeConnect = {},
+            onLeetCodeUpdate = {},
+            onLeetCodeRefresh = {},
             onUploadProfileImage = {},
             onDeleteProfileImage = {},
             onUsernameChange = {},
@@ -840,7 +925,9 @@ fun ProfileScreenFirstTimePreview() {
             hardTotal = null,
             selectedTabIndex = 0,
             evaluations = listOf(),
-            onLeetCodeConfirm = {},
+            onLeetCodeConnect = {},
+            onLeetCodeUpdate = {},
+            onLeetCodeRefresh = {},
             onUploadProfileImage = {},
             onDeleteProfileImage = {},
             onUsernameChange = {},
