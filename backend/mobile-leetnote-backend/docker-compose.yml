@@ -9,4 +9,7 @@ services:
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_URL: ${DB_URL}
+      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/leetnote-firebase-adminsdk.json
+    volumes:
+      - ./src/main/resources/leetnote-firebase-adminsdk.json:/run/secrets/leetnote-firebase-adminsdk.json:ro
     restart: unless-stopped
