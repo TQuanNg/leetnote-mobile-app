@@ -41,7 +41,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun OnboardingScreen(
     navController: NavController,
-    viewModel: OnboardingViewModel = hiltViewModel()
+    viewModel: OnboardingViewModel
 ) {
     val pagerState = rememberPagerState(pageCount = { onboardingPages.size })
     val coroutineScope = rememberCoroutineScope()
@@ -168,8 +168,14 @@ val onboardingPages = listOf(
 )
 
 
+
 @Preview
 @Composable
-fun WelcomeScreenPreview() {
-    OnboardingScreen(navController = rememberNavController())
+fun OnboardingContentPreview() {
+    val pagerState = rememberPagerState(pageCount = { onboardingPages.size })
+
+    OnboardingContent(
+        pagerState = pagerState,
+        onNextClick = {}
+    )
 }

@@ -44,7 +44,7 @@ import com.example.leetnote.R
 @Composable
 fun LoginScreen(
     navController: NavController,
-    viewModel: AuthViewModel = hiltViewModel()
+    viewModel: AuthViewModel
 ) {
 
     val currentUser by viewModel.currentUser.collectAsState()

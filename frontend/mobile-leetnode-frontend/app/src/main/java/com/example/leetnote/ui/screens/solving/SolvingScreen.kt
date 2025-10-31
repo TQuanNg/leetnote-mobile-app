@@ -37,6 +37,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.leetnote.data.model.ProblemDetailDTO
+import com.example.leetnote.data.model.SolutionDTO
 import com.example.leetnote.ui.components.ShadowButton
 import com.example.leetnote.ui.navigation.Screen
 
@@ -45,8 +46,8 @@ fun SolvingScreen(
     modifier: Modifier = Modifier,
     problemId: Long,
     navController: NavController,
+    viewModel: SolvingPageViewModel
 ) {
-    val viewModel: SolvingPageViewModel = hiltViewModel()
     val problemDetail by viewModel.problemDetail.collectAsState()
     val solutionText by viewModel.solutionText.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -171,13 +172,29 @@ fun SolvingContent (
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
-fun SolvingPreview() {
-    MaterialTheme {
-        SolvingScreen(
-            problemId = 1,
-            navController = rememberNavController(),
-            modifier = Modifier.fillMaxSize())
-    }
+fun SolvingContentPreview() {
+    val fakeProblem = ProblemDetailDTO(
+        id = 1L,
+        title = "Two Sum",
+        description = "Given an array of integers, return indices of the two numbers such that they add up to a specific target.",
+        difficulty = "Easy",
+        isFavorite = true,
+        isSolved = false,
+        solution = SolutionDTO(
+            approach = "Use a hash map to store values and check for complement.",
+            code = "fun twoSum(nums: IntArray, target: Int): IntArray { ... }",
+            timeComplexity = "O(n)",
+            spaceComplexity = "O(n)"
+        )
+    )
+
+    SolvingContent(
+        problemDetail = fakeProblem,
+        solutionText = "",
+        isLoading = false,
+        onTextChange = {},
+        onSubmit = {}
+    )
 }

@@ -63,7 +63,7 @@ fun getPatternIcon(patternId: Int): ImageVector {
 fun LearningResourcesScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    viewModel: LearningResViewModel = hiltViewModel()
+    viewModel: LearningResViewModel
 ) {
     val patterns by viewModel.patterns.collectAsState()
 

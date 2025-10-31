@@ -25,7 +25,7 @@ import com.example.leetnote.ui.components.CustomCard
 @Composable
 fun EvaluationScreen(
     problemId: Long,
-    viewModel: SolvingPageViewModel = hiltViewModel()
+    viewModel: SolvingPageViewModel
 ) {
     val lastEvaluation by viewModel.lastEvaluation.collectAsState()
 

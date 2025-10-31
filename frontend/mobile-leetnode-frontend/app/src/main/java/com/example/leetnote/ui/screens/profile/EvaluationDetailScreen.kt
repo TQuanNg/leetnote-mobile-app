@@ -54,7 +54,7 @@ fun EvaluationDetailScreen(
     problemId: Long,
     evaluationId: Long,
     onNavigateBack: () -> Unit = {},
-    viewModel: ProfileViewModel = hiltViewModel()
+    viewModel: ProfileViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()

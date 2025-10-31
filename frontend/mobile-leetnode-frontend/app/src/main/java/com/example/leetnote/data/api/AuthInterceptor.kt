@@ -59,10 +59,10 @@ class AuthInterceptor @Inject constructor(
             ?.addOnSuccessListener { result ->
                 val newToken = result.token
                 tokenStorage.updateToken(newToken)
-                cont.resume(newToken) {}
+                cont.resume(newToken) { cause, _, _ -> }
             }
             ?.addOnFailureListener {
-                cont.resume(null) {}
+                cont.resume(null) { cause, _, _ -> }
             }
     }
 }

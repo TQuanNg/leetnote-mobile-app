@@ -26,13 +26,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.leetnote.ui.screens.login.AuthViewModel
 import com.google.firebase.auth.FirebaseUser
-import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun SettingScreen(
     navController: NavController,
     authViewModel: AuthViewModel,
-    settingViewModel: SettingViewModel = hiltViewModel()
+    settingViewModel: SettingViewModel
 ) {
     val currentUser by authViewModel.currentUser.collectAsState()
 

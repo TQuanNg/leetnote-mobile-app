@@ -45,9 +45,8 @@ import com.example.leetnote.ui.navigation.Screen
 @Composable
 fun SignupScreen(
     navController: NavController,
-    viewModel: AuthViewModel = hiltViewModel()
+    viewModel: AuthViewModel
 ) {
-
     var displayName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }

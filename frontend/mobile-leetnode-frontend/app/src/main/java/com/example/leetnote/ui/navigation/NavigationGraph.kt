@@ -11,7 +11,6 @@ import com.example.leetnote.ui.screens.learning.LearningResourcesScreen
 import com.example.leetnote.ui.screens.problem.ProblemScreen
 import com.example.leetnote.ui.screens.solving.SolvingScreen
 import com.example.leetnote.ui.screens.home.HomeViewModel
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.leetnote.ui.screens.solving.EvaluationScreen
 import com.example.leetnote.ui.screens.learning.LearningItemScreen
 import com.example.leetnote.ui.screens.setting.SettingScreen
@@ -19,13 +18,18 @@ import com.example.leetnote.ui.screens.problem.SolutionScreen
 import com.example.leetnote.ui.screens.learning.LearningResViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.leetnote.ui.screens.login.AuthViewModel
 import com.example.leetnote.ui.screens.login.LoginScreen
 import com.example.leetnote.ui.screens.login.SignupScreen
 import com.example.leetnote.ui.screens.onboarding.OnboardingScreen
+import com.example.leetnote.ui.screens.onboarding.OnboardingViewModel
+import com.example.leetnote.ui.screens.problem.ProblemDetailViewModel
 import com.example.leetnote.ui.screens.profile.EvaluationDetailScreen
 import com.example.leetnote.ui.screens.profile.ProfileScreen
 import com.example.leetnote.ui.screens.profile.ProfileViewModel
+import com.example.leetnote.ui.screens.setting.SettingViewModel
+import com.example.leetnote.ui.screens.solving.SolvingPageViewModel
 import com.example.leetnote.ui.screens.splash.SplashScreen
 
 @Composable
@@ -55,7 +59,8 @@ fun NavigationGraph(navController: NavHostController) {
             SignupScreen(navController, viewModel)
         }
         composable(Screen.Onboarding.route) {
-            OnboardingScreen(navController)
+            val viewModel: OnboardingViewModel = hiltViewModel()
+            OnboardingScreen(navController, viewModel)
         }
         composable(Screen.Home.route) {backStackEntry ->
             val parentEntry = remember(backStackEntry) {
@@ -68,18 +73,24 @@ fun NavigationGraph(navController: NavHostController) {
             val viewModel: ProfileViewModel = hiltViewModel()
             ProfileScreen(viewModel, navController)
         }
-        composable(Screen.Learning.route) { LearningResourcesScreen(navController) }
+        composable(Screen.Learning.route) {
+            val viewModel: LearningResViewModel = hiltViewModel()
+            LearningResourcesScreen(navController, viewModel = viewModel)
+        }
         composable(Screen.Settings.route) {
             val viewModel: AuthViewModel = hiltViewModel()
-            SettingScreen(navController,viewModel)
+            val settingViewModel: SettingViewModel = hiltViewModel()
+            SettingScreen(navController,viewModel, settingViewModel)
         }
         composable(Screen.Problem.route) { backStackEntry ->
             val problemId = backStackEntry.arguments?.getString("problemId")?.toLongOrNull() ?: -1
-            ProblemScreen(problemId = problemId, navController = navController)
+            val viewModel: ProblemDetailViewModel = hiltViewModel()
+            ProblemScreen(problemId = problemId, navController = navController, viewModel = viewModel)
         }
         composable(Screen.Solving.route) { backStackEntry ->
             val problemId = backStackEntry.arguments?.getString("problemId")?.toLongOrNull() ?: -1
-            SolvingScreen(problemId = problemId, navController = navController)
+            val viewModel: SolvingPageViewModel = hiltViewModel()
+            SolvingScreen(problemId = problemId, navController = navController, viewModel = viewModel)
         }
         composable(Screen.Solution.route) { backStackEntry ->
             val problemId = backStackEntry.arguments?.getString("problemId")?.toLongOrNull() ?: -1
@@ -87,7 +98,8 @@ fun NavigationGraph(navController: NavHostController) {
         }
         composable(Screen.Evaluation.route) { backStackEntry ->
             val problemId = backStackEntry.arguments?.getString("problemId")?.toLongOrNull() ?: -1
-            EvaluationScreen(problemId = problemId)
+            val viewModel: SolvingPageViewModel = hiltViewModel()
+            EvaluationScreen(problemId = problemId, viewModel)
         }
         composable(Screen.EvaluationDetail.route) { backStackEntry ->
             val problemId = backStackEntry.arguments?.getString("problemId")?.toLongOrNull() ?: -1
