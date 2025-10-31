@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -18,7 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.leetnote.R
 import com.example.leetnote.ui.navigation.Screen
@@ -28,8 +26,8 @@ import com.example.leetnote.ui.screens.onboarding.OnboardingViewModel
 @Composable
 fun SplashScreen(
     navController: NavController,
-    onboardingViewModel: OnboardingViewModel = hiltViewModel(),
-    authViewModel: AuthViewModel = hiltViewModel()
+    onboardingViewModel: OnboardingViewModel,
+    authViewModel: AuthViewModel
 ) {
     val isOnboardingCompleted by onboardingViewModel.isOnboardingCompleted.collectAsState(initial = null)
     val currentUser by authViewModel.currentUser.collectAsState()

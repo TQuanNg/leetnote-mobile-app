@@ -36,7 +36,9 @@ import com.example.leetnote.ui.screens.splash.SplashScreen
 fun NavigationGraph(navController: NavHostController) {
     NavHost(navController, startDestination = Screen.Splash.route) {
         composable(Screen.Splash.route) {
-            SplashScreen(navController)
+            val authViewModel: AuthViewModel = hiltViewModel()
+            val onboardingViewModel: OnboardingViewModel = hiltViewModel()
+            SplashScreen(navController, onboardingViewModel, authViewModel)
         }
         composable(Screen.Login.route) {
             val viewModel: AuthViewModel = hiltViewModel()
@@ -94,7 +96,8 @@ fun NavigationGraph(navController: NavHostController) {
         }
         composable(Screen.Solution.route) { backStackEntry ->
             val problemId = backStackEntry.arguments?.getString("problemId")?.toLongOrNull() ?: -1
-            SolutionScreen(problemId = problemId)
+            val viewModel: ProblemDetailViewModel = hiltViewModel()
+            SolutionScreen(problemId = problemId, viewModel)
         }
         composable(Screen.Evaluation.route) { backStackEntry ->
             val problemId = backStackEntry.arguments?.getString("problemId")?.toLongOrNull() ?: -1

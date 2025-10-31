@@ -41,9 +41,10 @@ import com.example.leetnote.ui.components.CustomCard
 
 
 @Composable
-fun SolutionScreen(problemId: Long) {
-
-    val viewModel: ProblemDetailViewModel = hiltViewModel()
+fun SolutionScreen(
+    problemId: Long,
+    viewModel: ProblemDetailViewModel
+) {
     val problemDetail by viewModel.problemDetail.collectAsState()
     val isLoading by viewModel.isDetailLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()

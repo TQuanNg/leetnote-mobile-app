@@ -50,50 +50,73 @@ android {
 }
 
 dependencies {
-    implementation(platform("com.google.firebase:firebase-bom:34.2.0"))
-    implementation("com.google.firebase:firebase-auth")
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("androidx.credentials:credentials:1.5.0")
-    implementation("androidx.credentials:credentials-play-services-auth:1.5.0")
-    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
-    implementation("io.coil-kt.coil3:coil-compose:3.3.0")
-    implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
-    implementation("androidx.datastore:datastore-preferences:1.1.7")
-    implementation(libs.androidx.paging.runtime)
-    implementation(libs.androidx.paging.compose)
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.analytics)
+
+    // Authentication / Credentials
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
+
+    // Image loading
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+
+    // Data storage
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+
+    // Networking
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
+
+    // Architecture / Lifecycle
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.core.ktx)
+
+    // Navigation & DI
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
+
+    // Paging
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.paging.compose)
+
+    // Compose UI
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation("androidx.compose.material:material-icons-extended:1.7.8")
+    implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.material3.window.size.class1.android)
+
+    // Unit testing
     testImplementation(libs.junit)
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
-    testImplementation("androidx.arch.core:core-testing:2.2.0")
-    testImplementation("io.mockk:mockk:1.14.6")
-    testImplementation("androidx.paging:paging-testing:3.3.6")
-    testImplementation("org.jetbrains.kotlin:kotlin-test:1.9.22")
-    testImplementation("app.cash.turbine:turbine:1.2.1")
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.androidx.core.testing)
+    testImplementation(libs.mockk)
+    testImplementation(libs.androidx.paging.testing)
+    testImplementation(libs.kotlin.test)
+    testImplementation(libs.turbine)
+
+    // Android instrumented tests
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+
+    // Debug only
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }

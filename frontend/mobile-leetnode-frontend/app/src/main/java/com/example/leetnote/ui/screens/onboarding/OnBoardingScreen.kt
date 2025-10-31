@@ -31,9 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.leetnote.R
 import com.example.leetnote.ui.navigation.Screen
 import kotlinx.coroutines.launch
@@ -166,7 +164,6 @@ val onboardingPages = listOf(
     OnboardingPage(R.drawable.onboarding_2, "Stay Organized", "Track your progress and stay on top of your goals."),
     OnboardingPage(R.drawable.onboarding_3, "Get Started", "Join now and enjoy the full experience.")
 )
-
 
 
 @Preview
