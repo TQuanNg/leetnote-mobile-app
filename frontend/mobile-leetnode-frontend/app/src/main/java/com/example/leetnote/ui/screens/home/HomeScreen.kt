@@ -1,5 +1,6 @@
 package com.example.leetnote.ui.screens.home
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -44,6 +45,11 @@ fun HomeScreen(
 
     val searchQuery by viewModel.searchQuery.collectAsState()
     var showFilterSheet by remember { mutableStateOf(false) }
+    val listState = rememberLazyListState()
+
+    val shouldShowSearchBar by remember {
+        derivedStateOf { listState.firstVisibleItemIndex == 0 }
+    }
 
     // Use FilterSection's built-in dialog instead of ModalBottomSheet
     if (showFilterSheet) {
@@ -58,106 +64,115 @@ fun HomeScreen(
             isVisible = showFilterSheet
         )
     }
+    val pagedProblems = viewModel.pagedProblems.collectAsLazyPagingItems()
 
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 8.dp),
+        state = listState
+    ) {
 
-
-    Column(modifier = Modifier.fillMaxSize().padding(8.dp)) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = { showFilterSheet = true }) {
-                Image(
-                    painter = painterResource(id = R.drawable.filter_icon), // Use your icon's actual name
-                    contentDescription = "Filter Icon",
-                    modifier = Modifier.size(36.dp),
-                    colorFilter = ColorFilter.tint(Color(0xFF7B9EFF))
-                )
+        // ✅ Collapsible header area
+        item {
+            AnimatedVisibility(visible = shouldShowSearchBar) {
+                Column {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(onClick = { showFilterSheet = true }) {
+                            Image(
+                                painter = painterResource(id = R.drawable.filter_icon),
+                                contentDescription = "Filter Icon",
+                                modifier = Modifier.size(36.dp),
+                                colorFilter = ColorFilter.tint(Color(0xFF7B9EFF))
+                            )
+                        }
+                        OutlinedTextField(
+                            value = searchQuery,
+                            onValueChange = { viewModel.updateQuery(it) },
+                            label = { Text("Search Problems") },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(20.dp),
+                            singleLine = true
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
             }
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = { viewModel.updateQuery(it) },
-                label = { Text("Search Problems") },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                singleLine = true,
-
-            )
         }
 
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        val pagedProblems = viewModel.pagedProblems.collectAsLazyPagingItems()
-        val listState = rememberLazyListState()
-
+        // ✅ Problems list
         when (val refreshState = pagedProblems.loadState.refresh) {
             is LoadState.Loading -> {
-                // Initial load
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillParentMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
                 }
             }
             is LoadState.Error -> {
-                // Show error
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = getFriendlyErrorMessage(refreshState.error),
-                        color = MaterialTheme.colorScheme.error,
-                        textAlign = TextAlign.Center
-                    )
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillParentMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = getFriendlyErrorMessage(refreshState.error),
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
             else -> {
-                // Show list
-                LazyColumn(state = listState) {
-                    items(
-                        count = pagedProblems.itemCount,
-                        key = pagedProblems.itemKey { it.id }
-                    ) { index ->
-                        val problem = pagedProblems[index]
-                        problem?.let {
-                            ProblemItem(
-                                problem = it,
-                                onClick = { navHostController.navigate(Screen.Problem.createRoute(it.id)) },
-                                onSolvedToggle = { viewModel.toggleSolved(it) },
-                                onFavoriteToggle = { viewModel.toggleFavorite(it) }
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                        }
+                items(
+                    count = pagedProblems.itemCount,
+                    key = pagedProblems.itemKey { it.id }
+                ) { index ->
+                    val problem = pagedProblems[index]
+                    problem?.let {
+                        ProblemItem(
+                            problem = it,
+                            onClick = { navHostController.navigate(Screen.Problem.createRoute(it.id)) },
+                            onSolvedToggle = { viewModel.toggleSolved(it) },
+                            onFavoriteToggle = { viewModel.toggleFavorite(it) }
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
                     }
+                }
 
-                    // Handle append state
-                    when (pagedProblems.loadState.append) {
-                        is LoadState.Loading -> {
-                            item {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
-                                }
+                when (pagedProblems.loadState.append) {
+                    is LoadState.Loading -> {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(modifier = Modifier.size(24.dp))
                             }
                         }
-                        is LoadState.Error -> {
-                            item {
-                                Text(
-                                    text = "Failed to load more problems",
-                                    color = MaterialTheme.colorScheme.error,
-                                    modifier = Modifier.padding(16.dp)
-                                )
-                            }
-                        }
-                        else -> Unit
                     }
+                    is LoadState.Error -> {
+                        item {
+                            Text(
+                                text = "Failed to load more problems",
+                                color = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.padding(16.dp)
+                            )
+                        }
+                    }
+                    else -> Unit
                 }
             }
         }

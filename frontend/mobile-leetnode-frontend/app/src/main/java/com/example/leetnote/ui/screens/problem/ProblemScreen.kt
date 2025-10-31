@@ -60,8 +60,6 @@ fun ProblemScreen(
                     color = Color.Red
                 )
             }
-
-
             problemDetail != null -> {
                 CustomCard(
                     title = problemDetail!!.title,

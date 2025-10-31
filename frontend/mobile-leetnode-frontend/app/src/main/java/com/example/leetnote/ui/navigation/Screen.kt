@@ -39,7 +39,6 @@ sealed class Screen(
     object Solution : Screen(
         "solution/{problemId}",
         "Solution",
-        topIconRes = R.drawable.help_icon,
         ) {
         fun createRoute(problemId: Long) = "solution/$problemId"
     }
