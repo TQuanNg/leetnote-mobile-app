@@ -103,7 +103,6 @@ fun LearningResourcesContent(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Problem Patterns Header
         item {
             Text(
                 text = "Problem Patterns",
@@ -112,7 +111,6 @@ fun LearningResourcesContent(
             )
         }
 
-        // Problem Patterns grid
         items(patterns.chunked(2)) { rowItems ->
             Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),

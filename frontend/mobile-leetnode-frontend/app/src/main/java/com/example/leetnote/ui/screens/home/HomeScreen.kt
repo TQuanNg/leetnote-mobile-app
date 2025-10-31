@@ -1,7 +1,6 @@
 package com.example.leetnote.ui.screens.home
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -294,13 +293,3 @@ fun getFriendlyErrorMessage(error: Throwable): String {
         else -> "Something went wrong. Please try again."
     }
 }
-
-
-
-/*
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    HomeScreen()
-}*/
-

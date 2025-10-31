@@ -51,7 +51,6 @@ fun LoadingScreen() {
                 modifier = Modifier.size(48.dp)
             )
         }
-
     }
 }
 
