@@ -46,7 +46,6 @@ fun LearningItemContent(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Concept section
             CustomCard(
                 title = "💡 Concept",
                 description = pattern.concept,
@@ -57,7 +56,6 @@ fun LearningItemContent(
                 titleColor = MaterialTheme.colorScheme.primary
             )
 
-            // When to use section
             CustomCard(
                 title = "✅ When to Use",
                 description = pattern.when_to_use.joinToString("\n") { "• $it" },
@@ -68,7 +66,6 @@ fun LearningItemContent(
                 titleColor = MaterialTheme.colorScheme.onSurface
             )
 
-            // Approach section
             CustomCard(
                 title = "🔧 Approach",
                 description = pattern.approach.joinToString("\n") { "• $it" },
@@ -79,10 +76,8 @@ fun LearningItemContent(
                 titleColor = MaterialTheme.colorScheme.onSurface
             )
 
-            // Complexity section
             ComplexityCard(pattern.complexity)
 
-            // Examples section
             CustomCard(
                 title = "📝 Examples",
                 description = pattern.examples.joinToString("\n") { "• $it" },
@@ -93,7 +88,6 @@ fun LearningItemContent(
                 titleColor = MaterialTheme.colorScheme.onSurface
             )
 
-            // Tips section
             CustomCard(
                 title = "⭐ Pro Tips",
                 description = pattern.tips.joinToString("\n") { "• $it" },
@@ -105,7 +99,6 @@ fun LearningItemContent(
             )
         }
 
-        // Bottom spacing
         Spacer(modifier = Modifier.height(32.dp))
     }
 }
