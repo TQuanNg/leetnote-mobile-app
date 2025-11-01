@@ -1,10 +1,10 @@
 ## LeetNote App
-
 LeetNote is a full-stack Android application designed to help users **practice, review, and evaluate coding problems** in a more flexible and intuitive way.
 
 The idea behind LeetNote came from the need to have a **personal coding notebook** — a place where LeetCoders can review concepts, track progress, and jot down problem-solving ideas directly from their phone. Instead of relying on a laptop or PC every time, users can quickly explore problems, write pseudocode, and reflect on their approach on the go.
 
 What makes LeetNote unique is its **AI-powered pseudocode evaluation**, which allows users to express their logic naturally without worrying about syntax. The AI provides structured feedback and a rating based on the reasoning, helping users refine their algorithmic thinking and problem-solving approach.
+
 ## 📱 App Screenshot
 <p align="center">
   <img src="https://github.com/user-attachments/assets/ff0671c5-9479-4682-945d-f2570fa70682" width="250"/>
@@ -40,24 +40,30 @@ Developed with Spring Boot following a layered architecture:
 
 - Repository: Database access layer.
 
-- Entity: Data models.
+- Entity: Data models and DTOs.
 
 Connects to PostgreSQL for persistent storage.
 
-Integrates with Firebase Authentication for secure user login.
+Integrates with **Firebase Authentication** for secure user login.
 
 
 
 ## Containerization & Deployment
 
-- Backend and database are containerized with Docker.
+- Backend is containerized with Docker.
 
-- Images built and pushed to Docker Hub.
+- Images are multi-stage built and pushed to Docker Hub.
 
-- AWS EC2 hosts the backend.
+- Backend hosted on AWS EC2 (t3.micro) with Elastic IP for consistent public IP.
 
 - PostgreSQL database hosted on AWS RDS.
 
+## CI/CD Pipeline
+GitHub Actions triggers on every push or pull request with separate workflows for frontend and backend.
+
+- Frontend: Runs lint checks, unit tests, and builds the APK.
+
+- Backend: Runs unit and integration tests, builds the Docker image, pushes it to Docker Hub, and deploys to the AWS EC2 instance.
 
 ## 🧪 Testing
 
