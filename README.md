@@ -22,9 +22,7 @@ What makes LeetNote unique is its **AI-powered pseudocode evaluation**, which al
 
 Folder structure:
 
-- data – API interfaces and local database models
-
-- repository – Handles data operations and business logic
+- data – including API interfaces, data models, and repository.
 
 - ui – Screens and navigation with a Navigation Graph
 
@@ -54,12 +52,12 @@ Integrates with **Firebase Authentication** for secure user login.
 
 - Images are multi-stage built and pushed to Docker Hub.
 
-- Backend hosted on AWS EC2 (t3.micro) with Elastic IP for consistent public IP.
+- Backend hosted on AWS EC2 (t3.micro) with Elastic IP for a consistent public IP.
 
 - PostgreSQL database hosted on AWS RDS.
 
 ## CI/CD Pipeline
-GitHub Actions triggers on every push or pull request with separate workflows for frontend and backend.
+GitHub Actions triggers are set up to run on every push or pull request, with separate workflows for the frontend and backend.
 
 - Frontend: Runs lint checks, unit tests, and builds the APK.
 
@@ -83,23 +81,26 @@ The frontend, built with Jetpack Compose, is **fully runnable in Android Studio*
 The app can also be run locally for development or testing purposes:
 
 Backend:
-
 - Configure environment variables in application.properties.
+  
+- Set up a local PostgreSQL database (table schemas provided in the resources folder)
 
-- Set up Firebase Authentication (see Firebase Docs
-).
+- Set up Firebase Authentication (see Firebase Docs).
 
 - Run the Spring Boot backend using your IDE or ./gradlew bootRun.
 
 Frontend:
-
+- Update the backend API URL in the app to point to your local backend (e.g., `http://10.0.2.2:8080` for Android emulator).
+  
+- Add the `google-services.json` file for Firebase Authentication to the `app/` folder (see Firebase Docs).
+  
 - Open in Android Studio and run on an emulator or physical device.
 
 ## 🔮 Future Plans
 
-Complete user profile features, including customization and progress tracking.
+- Complete user profile features, including customization and progress tracking.
 
-Integrate LeetCode profile connection to fetch user stats and problem history.
+- Integrate LeetCode profile connection to fetch user stats and problem history.
 
-Expand testing coverage for both frontend and backend to ensure robust functionality.
+- Expand testing coverage for both frontend and backend to ensure robust functionality.
 
