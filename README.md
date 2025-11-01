@@ -14,7 +14,7 @@ What makes LeetNote unique is its **AI-powered pseudocode evaluation**, which al
   <img src="https://github.com/user-attachments/assets/339353d1-e771-46c4-8ed5-041231428878" width="250"/>
 </p>
 
-## 🚀 Key Features
+## 🚀 Tech Stack & Architecture
 
 ### Frontend
 - Built using Jetpack Compose for a modern, declarative UI.
