@@ -5,6 +5,19 @@ The idea behind LeetNote came from the need to have a **personal coding notebook
 
 What makes LeetNote unique is its **AI-powered pseudocode evaluation**, which allows users to express their logic naturally without worrying about syntax. The AI provides structured feedback and a rating based on the reasoning, helping users refine their algorithmic thinking and problem-solving approach.
 
+### Features
+- **User Authentication** – Simple and secure login and signup experience.
+
+- **Problem Exploration** – Browse and search coding problems with detailed views of each problem and solution.
+
+- **Smart Evaluation** – Write pseudocode and get AI-powered feedback that evaluates your logic and problem-solving approach.
+
+- **Bookmark & Track Progress** – Mark problems as favorite or solved to easily revisit and monitor your learning journey.
+
+- **Profile Integration** – Connect your LeetCode profile to synchronize solved problems and performance.
+
+- **Learning Resources** – Explore categorized problem patterns to strengthen your understanding of algorithms and data structures.
+
 ## 📱 App Screenshot
 <p align="center">
   <img src="https://github.com/TQuanNg/leetnote-mobile-app/blob/main/assets/Screenshot_home.png" width="250"/>
@@ -17,8 +30,8 @@ What makes LeetNote unique is its **AI-powered pseudocode evaluation**, which al
 ## 🚀 Tech Stack & Architecture
 
 ### Frontend
-- Built using Jetpack Compose for a modern, declarative UI.
-- Hilt for dependency injection, ensuring clean architecture.
+- Built using **[Jetpack Compose](https://developer.android.com/jetpack/compose)** for a modern, declarative UI.
+- **[Hilt](https://developer.android.com/training/dependency-injection/hilt-android)** for dependency injection, ensuring clean architecture.
 
 Folder structure:
 
@@ -26,11 +39,11 @@ Folder structure:
 
 - ui – Screens and navigation with a Navigation Graph
 
-- viewmodel – State management and feature-specific logic
+- **[ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel)** – State management and feature-specific logic
 
 ### Backend
 
-Developed with Spring Boot following a layered architecture:
+Developed with **[Spring Boot](https://spring.io/projects/spring-boot)** following **[layered architecture](https://www.geeksforgeeks.org/springboot/spring-boot-architecture/)**:
 
 - Controller: REST endpoints.
 
@@ -42,11 +55,11 @@ Developed with Spring Boot following a layered architecture:
 
 Connects to PostgreSQL for persistent storage.
 
-Integrates with **Firebase Authentication** for secure user login.
+Integrates with **[Firebase Authentication](https://firebase.google.com/docs/auth/android/start?authuser=0)** for secure user login.
 
 
 
-## Containerization & Deployment
+## 📦 Containerization & Deployment
 
 - Backend is containerized with Docker.
 
@@ -56,8 +69,8 @@ Integrates with **Firebase Authentication** for secure user login.
 
 - PostgreSQL database hosted on AWS RDS.
 
-## CI/CD Pipeline
-GitHub Actions triggers are set up to run on every push or pull request, with separate workflows for the frontend and backend.
+## 🔄 CI/CD Pipeline
+**[GitHub Actions](https://github.com/features/actions)** triggers are set up to run on every push or pull request, with separate workflows for the frontend and backend.
 
 - Frontend: Runs lint checks, unit tests, and builds the APK.
 
