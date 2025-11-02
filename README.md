@@ -7,11 +7,11 @@ What makes LeetNote unique is its **AI-powered pseudocode evaluation**, which al
 
 ## 📱 App Screenshot
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/ff0671c5-9479-4682-945d-f2570fa70682" width="250"/>
-  <img src="https://github.com/user-attachments/assets/54ecea16-66fd-418e-a3a4-02238a37a2e8" width="250"/>
-  <img src="https://github.com/user-attachments/assets/e93f71c5-e777-4665-8e7c-971f651803b0" width="250"/>
-  <img src="https://github.com/user-attachments/assets/d08df5fe-c1ee-4ff1-8238-8c72ec171881" width="250"/>
-  <img src="https://github.com/user-attachments/assets/339353d1-e771-46c4-8ed5-041231428878" width="250"/>
+  <img src="https://github.com/TQuanNg/leetnote-mobile-app/blob/main/assets/Screenshot_home.png" width="250"/>
+  <img src="https://github.com/TQuanNg/leetnote-mobile-app/blob/main/assets/Screenshot_onboarding.png" width="250"/>
+  <img src="https://github.com/TQuanNg/leetnote-mobile-app/blob/main/assets/Screenshot_learning.png  " width="250"/>
+  <img src="https://github.com/TQuanNg/leetnote-mobile-app/blob/main/assets/Screenshot_problem.png" width="250"/>
+  <img src="https://github.com/TQuanNg/leetnote-mobile-app/blob/main/assets/Screenshot_evaluation_detail.png" width="250"/>
 </p>
 
 ## 🚀 Tech Stack & Architecture
