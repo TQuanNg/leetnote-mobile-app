@@ -3,6 +3,8 @@ package com.example.leetnote.ui.screens.profile
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.ui.platform.LocalContext
+import com.example.leetnote.utils.PermissionUtils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -232,11 +234,31 @@ private fun ProfileHeader(
     onEditUsername: () -> Unit
 ) {
     var showImageSheet by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
-        uri?.let { onUploadProfileImage(it.toString()) }
+        uri?.let {
+            // Pass the URI as string to the ViewModel
+            onUploadProfileImage(it.toString())
+        }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            imagePickerLauncher.launch("image/*")
+        }
+    }
+
+    fun launchImagePicker() {
+        if (PermissionUtils.hasImagePermission(context)) {
+            imagePickerLauncher.launch("image/*")
+        } else {
+            permissionLauncher.launch(PermissionUtils.getImagePermission())
+        }
     }
 
     Row(
@@ -263,7 +285,7 @@ private fun ProfileHeader(
         onDismiss = { showImageSheet = false },
         onUpload = {
             showImageSheet = false
-            imagePickerLauncher.launch("image/*")
+            launchImagePicker()
         },
         onRemove = {
             showImageSheet = false

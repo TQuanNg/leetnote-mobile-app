@@ -5,7 +5,6 @@ import com.example.leetnote.data.model.ProblemDetailDTO
 import com.example.leetnote.data.model.ProblemListDTO
 import com.example.leetnote.data.model.SetUsernameRequest
 import com.example.leetnote.data.model.SubmissionDTO
-import com.example.leetnote.data.model.UpdateProfileRequest
 import com.example.leetnote.data.model.UserProfileDTO
 import com.example.leetnote.data.model.EvaluationDetail
 import com.example.leetnote.data.model.EvaluationDetailDTO
@@ -13,7 +12,6 @@ import com.example.leetnote.data.model.EvaluationListItemDTO
 import com.example.leetnote.data.model.LeetcodeStatsDTO
 import retrofit2.Response
 import retrofit2.http.Body
-import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -30,14 +28,6 @@ interface LeetnoteApiService {
     suspend fun setUsername(
         @Body request: SetUsernameRequest
     ): UserProfileDTO
-
-    @PUT("api/users/profile-picture")
-    suspend fun uploadProfilePicture(
-        @Body request: UpdateProfileRequest
-    ): String
-
-    @DELETE("api/users/profile-picture")
-    suspend fun deleteProfilePicture(): Response<Unit>
 
     @GET("problems")
     suspend fun getAllProblems(

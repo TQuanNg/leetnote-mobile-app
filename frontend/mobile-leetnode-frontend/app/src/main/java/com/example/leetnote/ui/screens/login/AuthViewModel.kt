@@ -155,7 +155,6 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-
     fun fetchIdToken() {
         val user = auth.currentUser
         user?.getIdToken(true)?.addOnSuccessListener { result ->
@@ -167,7 +166,6 @@ class AuthViewModel @Inject constructor(
             Log.e("AuthViewModel", "Failed to fetch ID token", it)
         }
     }
-
 
 
     fun logout() {

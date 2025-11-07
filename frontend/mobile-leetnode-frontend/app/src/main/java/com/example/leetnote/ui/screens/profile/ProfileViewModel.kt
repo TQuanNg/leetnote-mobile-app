@@ -152,7 +152,10 @@ class ProfileViewModel @Inject constructor(
             _isLoading.value = true
             _error.value = null
             try {
-                userRepository.deleteProfileImage()
+                val currentImageUrl = _uiState.value.profileImageUrl
+                if (currentImageUrl != null) {
+                    userRepository.deleteProfileImage(currentImageUrl)
+                }
                 _uiState.update { it.copy(profileImageUrl = null) }
             } catch (e: Exception) {
                 _error.value = e.message

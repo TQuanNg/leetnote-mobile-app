@@ -29,7 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.leetnote.data.model.LearningTopic
 import com.example.leetnote.R
@@ -175,7 +174,7 @@ fun LearningResourcesScreenPreview() {
             id = 1,
             name = "Two Pointers",
             concept = "Use two indices moving through an array...",
-            when_to_use = listOf("Finding pairs", "Checking palindrome"),
+            whenToUse = listOf("Finding pairs", "Checking palindrome"),
             approach = listOf("Init two pointers", "Move based on condition"),
             complexity = Complexity("O(n)", "O(1)"),
             examples = listOf("167. Two Sum II"),
@@ -185,7 +184,7 @@ fun LearningResourcesScreenPreview() {
             id = 2,
             name = "Merge Intervals",
             concept = "Sort by start, merge overlaps...",
-            when_to_use = listOf("Scheduling", "Finding free slots"),
+            whenToUse = listOf("Scheduling", "Finding free slots"),
             approach = listOf("Sort", "Merge", "Push result"),
             complexity = Complexity("O(n log n)", "O(n)"),
             examples = listOf("56. Merge Intervals"),

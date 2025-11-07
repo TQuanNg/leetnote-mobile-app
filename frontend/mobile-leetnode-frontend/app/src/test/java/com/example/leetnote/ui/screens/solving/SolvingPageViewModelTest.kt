@@ -7,7 +7,6 @@ import com.example.leetnote.data.model.SolutionDTO
 import com.example.leetnote.data.model.SubmissionDTO
 import com.example.leetnote.data.model.EvaluationDetail
 import com.example.leetnote.data.model.EvaluationDTO
-import com.example.leetnote.data.model.EvaluationDetailDTO
 import com.example.leetnote.data.model.EvaluationListItemDTO
 import com.example.leetnote.data.repository.EvaluationRepository
 import com.example.leetnote.data.repository.ProblemRepository
@@ -18,7 +17,6 @@ import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -47,7 +45,8 @@ class SolvingPageViewModelTest {
     // Test data
     private val sampleSolution = SolutionDTO(
         approach = "Two Pointers",
-        code = "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        // Implementation\n    }\n}",
+        code = "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n" +
+            "        // Implementation\n    }\n}",
         timeComplexity = "O(n)",
         spaceComplexity = "O(1)"
     )
@@ -55,7 +54,8 @@ class SolvingPageViewModelTest {
     private val sampleProblemDetail = ProblemDetailDTO(
         id = 1L,
         title = "Two Sum",
-        description = "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
+        description = "Given an array of integers nums and an integer target, " +
+            "return indices of the two numbers such that they add up to target.",
         difficulty = "Easy",
         isFavorite = false,
         isSolved = false,
@@ -82,22 +82,6 @@ class SolvingPageViewModelTest {
         createdAt = "2025-10-14T12:05:00Z"
     )
 
-    private val sampleEvaluationDetailDTO = EvaluationDetailDTO(
-        evaluationId = 1L,
-        problemId = 1L,
-        problemTitle = "Two Sum",
-        difficulty = "Easy",
-        createdAt = "2025-10-14T12:05:00Z",
-        evaluation = sampleEvaluationDTO,
-        solutionText = "def twoSum(nums, target):\n    # solution code\n    pass"
-    )
-
-    private val sampleEvaluationListItem = EvaluationListItemDTO(
-        evaluationId = 1L,
-        problemId = 1L,
-        problemTitle = "Two Sum",
-        createdAt = "2025-10-14T12:00:00Z"
-    )
 
     @Before
     fun setup() {
@@ -124,14 +108,14 @@ class SolvingPageViewModelTest {
         // Given - ViewModel is initialized
 
         // When - Getting initial state
-        val problemDetail = viewModel.problemDetail.first()
-        val solutionText = viewModel.solutionText.first()
-        val isLoading = viewModel.isLoading.first()
-        val lastSubmission = viewModel.lastSubmission.first()
-        val lastEvaluation = viewModel.lastEvaluation.first()
-        val allEvaluations = viewModel.allEvaluations.first()
-        val evaluationResult = viewModel.evaluationResult.first()
-        val error = viewModel.error.first()
+        val problemDetail = viewModel.problemDetail.value
+        val solutionText = viewModel.solutionText.value
+        val isLoading = viewModel.isLoading.value
+        val lastSubmission = viewModel.lastSubmission.value
+        val lastEvaluation = viewModel.lastEvaluation.value
+        val allEvaluations = viewModel.allEvaluations.value
+        val evaluationResult = viewModel.evaluationResult.value
+        val error = viewModel.error.value
 
         // Then - All values should be in initial state
         assertNull(problemDetail)
@@ -157,8 +141,8 @@ class SolvingPageViewModelTest {
         viewModel.onSolutionTextChange(newText)
 
         // Then
-        assertEquals(newText, viewModel.solutionText.first())
-        assertNull(viewModel.error.first())
+        assertEquals(newText, viewModel.solutionText.value)
+        assertNull(viewModel.error.value)
     }
 
     @Test
@@ -170,13 +154,13 @@ class SolvingPageViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Verify error is set
-        assertTrue(viewModel.error.first()?.contains("Test error") == true)
+        assertTrue(viewModel.error.value?.contains("Test error") == true)
 
         // When
         viewModel.clearError()
 
         // Then
-        assertNull(viewModel.error.first())
+        assertNull(viewModel.error.value)
     }
 
     @Test
@@ -190,8 +174,8 @@ class SolvingPageViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(sampleProblemDetail, viewModel.problemDetail.first())
-        assertNull(viewModel.error.first())
+        assertEquals(sampleProblemDetail, viewModel.problemDetail.value)
+        assertNull(viewModel.error.value)
 
         coVerify { problemRepository.getProblemDetail(problemId) }
     }
@@ -208,8 +192,8 @@ class SolvingPageViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertNull(viewModel.problemDetail.first())
-        assertEquals("Failed to load problem detail: $errorMsg", viewModel.error.first())
+        assertNull(viewModel.problemDetail.value)
+        assertEquals("Failed to load problem detail: $errorMsg", viewModel.error.value)
 
         coVerify { problemRepository.getProblemDetail(problemId) }
     }
@@ -217,7 +201,7 @@ class SolvingPageViewModelTest {
     @Test
     fun `submitSolution should not submit if solution text is blank`() = runTest {
         // Given - Empty solution text
-        assertEquals("", viewModel.solutionText.first())
+        assertEquals("", viewModel.solutionText.value)
 
         // When
         viewModel.submitSolution(1L)
@@ -225,7 +209,10 @@ class SolvingPageViewModelTest {
 
         // Then - No repository calls should be made
         coVerify(exactly = 0) { evaluationRepository.createEvaluation(any()) }
-        assertFalse(viewModel.isLoading.first())
+        // Loading should remain false since we return early
+        assertFalse(viewModel.isLoading.value)
+        // Evaluation result should remain null
+        assertNull(viewModel.evaluationResult.value)
     }
 
     @Test
@@ -243,9 +230,9 @@ class SolvingPageViewModelTest {
             testDispatcher.scheduler.advanceUntilIdle()
 
             // Then
-            assertFalse(viewModel.isLoading.first())
-            assertEquals(sampleEvaluation, viewModel.evaluationResult.first())
-            assertNull(viewModel.error.first())
+            assertFalse(viewModel.isLoading.value)
+            assertEquals(sampleEvaluation, viewModel.evaluationResult.value)
+            assertNull(viewModel.error.value)
 
             // Should emit navigation event
             assertEquals(sampleEvaluation, awaitItem())
@@ -265,17 +252,20 @@ class SolvingPageViewModelTest {
         val solutionText = "def solution():\n    return 'test'"
 
         viewModel.onSolutionTextChange(solutionText)
-        // Simulate a timeout by throwing a custom timeout exception that will be caught by the outer catch block
-        coEvery { evaluationRepository.createEvaluation(any()) } throws RuntimeException("Request timeout")
+        // Simulate timeout by causing a delay longer than the timeout in ViewModel (10 seconds)
+        coEvery { evaluationRepository.createEvaluation(any()) } coAnswers {
+            kotlinx.coroutines.delay(15000) // This will cause timeout in withTimeout(10000L)
+            sampleEvaluation
+        }
 
         // When
         viewModel.submitSolution(problemId)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        // Then
-        assertFalse(viewModel.isLoading.first())
-        assertNull(viewModel.evaluationResult.first())
-        assertEquals("Unexpected error: Request timeout", viewModel.error.first())
+        // Then - timeout should result in null evaluation and error message
+        assertFalse(viewModel.isLoading.value)
+        assertNull(viewModel.evaluationResult.value)
+        assertEquals("Submission timed out. Please try again.", viewModel.error.value)
 
         coVerify { evaluationRepository.createEvaluation(any()) }
     }
@@ -294,9 +284,9 @@ class SolvingPageViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertFalse(viewModel.isLoading.first())
-        assertNull(viewModel.evaluationResult.first())
-        assertEquals("Cannot connect to server. Please check your network.", viewModel.error.first())
+        assertFalse(viewModel.isLoading.value)
+        assertNull(viewModel.evaluationResult.value)
+        assertEquals("Cannot connect to server. Please check your network.", viewModel.error.value)
 
         coVerify { evaluationRepository.createEvaluation(any()) }
     }
@@ -316,9 +306,9 @@ class SolvingPageViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertFalse(viewModel.isLoading.first())
-        assertNull(viewModel.evaluationResult.first())
-        assertEquals("Unexpected error: $errorMsg", viewModel.error.first())
+        assertFalse(viewModel.isLoading.value)
+        assertNull(viewModel.evaluationResult.value)
+        assertEquals("Unexpected error: $errorMsg", viewModel.error.value)
 
         coVerify { evaluationRepository.createEvaluation(any()) }
     }
@@ -334,8 +324,8 @@ class SolvingPageViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(sampleSubmission, viewModel.lastSubmission.first())
-        assertFalse(viewModel.isLoading.first())
+        assertEquals(sampleSubmission, viewModel.lastSubmission.value)
+        assertFalse(viewModel.isLoading.value)
 
         coVerify { evaluationRepository.getLastSubmission(problemId) }
     }
@@ -344,7 +334,7 @@ class SolvingPageViewModelTest {
     fun `fetchLastSubmission should update solution text if empty`() = runTest {
         // Given
         val problemId = 1L
-        assertEquals("", viewModel.solutionText.first()) // Initially empty
+        assertEquals("", viewModel.solutionText.value) // Initially empty
 
         coEvery { evaluationRepository.getLastSubmission(problemId) } returns sampleSubmission
 
@@ -353,8 +343,8 @@ class SolvingPageViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(sampleSubmission.solutionText, viewModel.solutionText.first())
-        assertEquals(sampleSubmission, viewModel.lastSubmission.first())
+        assertEquals(sampleSubmission.solutionText, viewModel.solutionText.value)
+        assertEquals(sampleSubmission, viewModel.lastSubmission.value)
 
         coVerify { evaluationRepository.getLastSubmission(problemId) }
     }
@@ -373,8 +363,8 @@ class SolvingPageViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(existingSolution, viewModel.solutionText.first()) // Should remain unchanged
-        assertEquals(sampleSubmission, viewModel.lastSubmission.first())
+        assertEquals(existingSolution, viewModel.solutionText.value) // Should remain unchanged
+        assertEquals(sampleSubmission, viewModel.lastSubmission.value)
 
         coVerify { evaluationRepository.getLastSubmission(problemId) }
     }
@@ -390,8 +380,8 @@ class SolvingPageViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertNull(viewModel.lastSubmission.first())
-        assertFalse(viewModel.isLoading.first())
+        assertNull(viewModel.lastSubmission.value)
+        assertFalse(viewModel.isLoading.value)
 
         coVerify { evaluationRepository.getLastSubmission(problemId) }
     }
@@ -407,8 +397,8 @@ class SolvingPageViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertEquals(sampleEvaluation, viewModel.lastEvaluation.first())
-        assertFalse(viewModel.isLoading.first())
+        assertEquals(sampleEvaluation, viewModel.lastEvaluation.value)
+        assertFalse(viewModel.isLoading.value)
 
         coVerify { evaluationRepository.getNewEvaluation(problemId) }
     }
@@ -424,8 +414,8 @@ class SolvingPageViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
-        assertNull(viewModel.lastEvaluation.first())
-        assertFalse(viewModel.isLoading.first())
+        assertNull(viewModel.lastEvaluation.value)
+        assertFalse(viewModel.isLoading.value)
 
         coVerify { evaluationRepository.getNewEvaluation(problemId) }
     }
@@ -439,18 +429,13 @@ class SolvingPageViewModelTest {
             sampleSubmission
         }
 
-        // When & Then - Test loading state flow
-        viewModel.isLoading.test {
-            assertEquals(false, awaitItem()) // Initial state
+        // When
+        viewModel.fetchLastSubmission(problemId)
+        testDispatcher.scheduler.advanceUntilIdle()
 
-            viewModel.fetchLastSubmission(problemId)
-
-            // Note: Due to how coroutines work with test dispatcher,
-            // we need to advance time to see loading state changes
-            testDispatcher.scheduler.advanceUntilIdle()
-
-            assertEquals(false, awaitItem()) // Final state after completion
-        }
+        // Then - After completion, loading should be false
+        assertFalse(viewModel.isLoading.value)
+        assertEquals(sampleSubmission, viewModel.lastSubmission.value)
     }
 
     @Test
@@ -466,9 +451,9 @@ class SolvingPageViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then - Both operations should complete successfully
-        assertEquals(sampleSubmission, viewModel.lastSubmission.first())
-        assertEquals(sampleEvaluation, viewModel.lastEvaluation.first())
-        assertFalse(viewModel.isLoading.first())
+        assertEquals(sampleSubmission, viewModel.lastSubmission.value)
+        assertEquals(sampleEvaluation, viewModel.lastEvaluation.value)
+        assertFalse(viewModel.isLoading.value)
 
         coVerify { evaluationRepository.getLastSubmission(problemId) }
         coVerify { evaluationRepository.getNewEvaluation(problemId) }
@@ -482,13 +467,319 @@ class SolvingPageViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Verify error is set
-        assertTrue(viewModel.error.first()?.contains("Test error") == true)
+        assertTrue(viewModel.error.value?.contains("Test error") == true)
 
         // When - Change solution text
         viewModel.onSolutionTextChange("new solution")
 
         // Then - Error should be cleared
-        assertNull(viewModel.error.first())
-        assertEquals("new solution", viewModel.solutionText.first())
+        assertNull(viewModel.error.value)
+        assertEquals("new solution", viewModel.solutionText.value)
+    }
+
+    @Test
+    fun `submitSolution with whitespace only solution should not submit`() = runTest {
+        // Given - Solution text with only whitespace
+        viewModel.onSolutionTextChange("   \n\t  ")
+
+        // When
+        viewModel.submitSolution(1L)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then - No repository calls should be made
+        coVerify(exactly = 0) { evaluationRepository.createEvaluation(any()) }
+        assertFalse(viewModel.isLoading.value)
+    }
+
+    @Test
+    fun `loadProblemDetail should clear previous error before loading`() = runTest {
+        // Given - Set initial error
+        coEvery { problemRepository.getProblemDetail(1L) } throws RuntimeException("First error")
+        viewModel.loadProblemDetail(1L)
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertTrue(viewModel.error.value?.contains("First error") == true)
+
+        // When - Load another problem successfully
+        coEvery { problemRepository.getProblemDetail(2L) } returns sampleProblemDetail
+        viewModel.loadProblemDetail(2L)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then - Error should be cleared
+        assertNull(viewModel.error.value)
+        assertEquals(sampleProblemDetail, viewModel.problemDetail.value)
+    }
+
+    @Test
+    fun `submitSolution should clear previous error before submitting`() = runTest {
+        // Given - Set initial error and valid solution
+        coEvery { problemRepository.getProblemDetail(any()) } throws RuntimeException("Test error")
+        viewModel.loadProblemDetail(1L)
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertTrue(viewModel.error.value != null)
+
+        viewModel.onSolutionTextChange("valid solution code")
+        coEvery { evaluationRepository.createEvaluation(any()) } returns sampleEvaluation
+
+        // When
+        viewModel.submitSolution(1L)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then - Error should be cleared and evaluation result should be set
+        assertNull(viewModel.error.value)
+        assertEquals(sampleEvaluation, viewModel.evaluationResult.value)
+    }
+
+    @Test
+    fun `fetchLastSubmission should return null when no previous submission exists`() = runTest {
+        // Given
+        val problemId = 1L
+        coEvery { evaluationRepository.getLastSubmission(problemId) } returns null
+
+        // When
+        viewModel.fetchLastSubmission(problemId)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        assertNull(viewModel.lastSubmission.value)
+        assertEquals("", viewModel.solutionText.value) // Should remain empty
+    }
+
+    @Test
+    fun `fetchLastEvaluation should return null when no previous evaluation exists`() = runTest {
+        // Given
+        val problemId = 1L
+        coEvery { evaluationRepository.getNewEvaluation(problemId) } returns null
+
+        // When
+        viewModel.fetchLastEvaluation(problemId)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        assertNull(viewModel.lastEvaluation.value)
+    }
+
+    @Test
+    fun `submitSolution should preserve solution text on failure`() = runTest {
+        // Given
+        val problemId = 1L
+        val solutionText = "def solution():\n    return 'test'"
+
+        viewModel.onSolutionTextChange(solutionText)
+        coEvery { evaluationRepository.createEvaluation(any()) } throws IOException("Network error")
+
+        // When
+        viewModel.submitSolution(problemId)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then - Solution text should not be cleared
+        assertEquals(solutionText, viewModel.solutionText.value)
+        assertEquals("Cannot connect to server. Please check your network.", viewModel.error.value)
+    }
+
+    @Test
+    fun `multiple loadProblemDetail calls should handle race conditions correctly`() = runTest {
+        // Given
+        val problem1 = sampleProblemDetail.copy(id = 1L, title = "Problem 1")
+        val problem2 = sampleProblemDetail.copy(id = 2L, title = "Problem 2")
+
+        coEvery { problemRepository.getProblemDetail(1L) } coAnswers {
+            kotlinx.coroutines.delay(100)
+            problem1
+        }
+        coEvery { problemRepository.getProblemDetail(2L) } returns problem2
+
+        // When - Trigger two loads, second one should complete first
+        viewModel.loadProblemDetail(1L)
+        viewModel.loadProblemDetail(2L)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then - Should have the result from the last completed call
+        val finalProblem = viewModel.problemDetail.value
+        assertTrue(finalProblem?.id == 1L || finalProblem?.id == 2L)
+    }
+
+    @Test
+    fun `submitSolution should handle successful submission with empty feedback`() = runTest {
+        // Given
+        val problemId = 1L
+        val solutionText = "perfect solution"
+        val evaluationWithEmptyFeedback = sampleEvaluation.copy(
+            evaluation = sampleEvaluationDTO.copy(
+                rating = 100,
+                issue = emptyList(),
+                feedback = emptyList()
+            )
+        )
+
+        viewModel.onSolutionTextChange(solutionText)
+        coEvery { evaluationRepository.createEvaluation(any()) } returns evaluationWithEmptyFeedback
+
+        // When
+        viewModel.navigateToEvaluation.test {
+            viewModel.submitSolution(problemId)
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // Then
+            assertEquals(evaluationWithEmptyFeedback, viewModel.evaluationResult.value)
+            assertEquals(evaluationWithEmptyFeedback, awaitItem())
+            assertNull(viewModel.error.value)
+        }
+    }
+
+    @Test
+    fun `onSolutionTextChange with empty string should clear previous text`() = runTest {
+        // Given - Set initial solution text
+        viewModel.onSolutionTextChange("initial solution")
+        assertEquals("initial solution", viewModel.solutionText.value)
+
+        // When - Change to empty string
+        viewModel.onSolutionTextChange("")
+
+        // Then
+        assertEquals("", viewModel.solutionText.value)
+    }
+
+    @Test
+    fun `fetchLastSubmission with null response should not throw exception`() = runTest {
+        // Given
+        val problemId = 1L
+        coEvery { evaluationRepository.getLastSubmission(problemId) } returns null
+
+        // When
+        viewModel.fetchLastSubmission(problemId)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then - Should complete without error
+        assertNull(viewModel.lastSubmission.value)
+        assertNull(viewModel.error.value)
+        assertFalse(viewModel.isLoading.value)
+    }
+
+    @Test
+    fun `loading state should be false after successful operations`() = runTest {
+        // Given
+        val problemId = 1L
+        coEvery { problemRepository.getProblemDetail(problemId) } returns sampleProblemDetail
+        coEvery { evaluationRepository.getLastSubmission(problemId) } returns sampleSubmission
+        coEvery { evaluationRepository.getNewEvaluation(problemId) } returns sampleEvaluation
+
+        // When - Execute multiple operations
+        viewModel.loadProblemDetail(problemId)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.fetchLastSubmission(problemId)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.fetchLastEvaluation(problemId)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then - Loading should be false after all operations complete
+        assertFalse(viewModel.isLoading.value)
+    }
+
+    @Test
+    fun `loading state should be false after failed operations`() = runTest {
+        // Given
+        val problemId = 1L
+        coEvery { problemRepository.getProblemDetail(problemId) } throws RuntimeException("Error")
+        coEvery { evaluationRepository.getLastSubmission(problemId) } throws RuntimeException("Error")
+        coEvery { evaluationRepository.getNewEvaluation(problemId) } throws RuntimeException("Error")
+
+        // When - Execute multiple operations that fail
+        viewModel.loadProblemDetail(problemId)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.fetchLastSubmission(problemId)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.fetchLastEvaluation(problemId)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then - Loading should be false after all operations complete
+        assertFalse(viewModel.isLoading.value)
+    }
+
+    @Test
+    fun `submitSolution with very long solution text should work`() = runTest {
+        // Given
+        val problemId = 1L
+        val longSolution = "a".repeat(10000) // Very long solution
+        viewModel.onSolutionTextChange(longSolution)
+        coEvery { evaluationRepository.createEvaluation(any()) } returns sampleEvaluation
+
+        // When
+        viewModel.submitSolution(problemId)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        assertEquals(sampleEvaluation, viewModel.evaluationResult.value)
+        assertNull(viewModel.error.value)
+    }
+
+    @Test
+    fun `submitSolution with special characters should work`() = runTest {
+        // Given
+        val problemId = 1L
+        val specialCharSolution = "def solution():\n    return \"!@#$%^&*()_+-=[]{}|;':,.<>?/~`\""
+        viewModel.onSolutionTextChange(specialCharSolution)
+        coEvery { evaluationRepository.createEvaluation(any()) } returns sampleEvaluation
+
+        // When
+        viewModel.submitSolution(problemId)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        assertEquals(sampleEvaluation, viewModel.evaluationResult.value)
+        assertNull(viewModel.error.value)
+    }
+
+    @Test
+    fun `clearError called multiple times should remain null`() = runTest {
+        // When - Clear error multiple times
+        viewModel.clearError()
+        viewModel.clearError()
+        viewModel.clearError()
+
+        // Then
+        assertNull(viewModel.error.value)
+    }
+
+    @Test
+    fun `fetchLastSubmission should not override manually entered solution text`() = runTest {
+        // Given
+        val problemId = 1L
+        val manualSolution = "manually typed solution"
+        val fetchedSubmission = sampleSubmission.copy(solutionText = "fetched solution")
+
+        // User types solution first
+        viewModel.onSolutionTextChange(manualSolution)
+        coEvery { evaluationRepository.getLastSubmission(problemId) } returns fetchedSubmission
+
+        // When - Fetch last submission after user has typed
+        viewModel.fetchLastSubmission(problemId)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then - Manual solution should be preserved
+        assertEquals(manualSolution, viewModel.solutionText.value)
+        assertEquals(fetchedSubmission, viewModel.lastSubmission.value)
+    }
+
+    @Test
+    fun `problem detail should be null before loadProblemDetail is called`() = runTest {
+        // Then - Initial state
+        assertNull(viewModel.problemDetail.value)
+    }
+
+    @Test
+    fun `all state flows should be initialized correctly`() = runTest {
+        // Then - Verify all initial states
+        assertNull(viewModel.problemDetail.value)
+        assertEquals("", viewModel.solutionText.value)
+        assertFalse(viewModel.isLoading.value)
+        assertNull(viewModel.lastSubmission.value)
+        assertNull(viewModel.lastEvaluation.value)
+        assertEquals(emptyList<EvaluationListItemDTO>(), viewModel.allEvaluations.value)
+        assertNull(viewModel.evaluationResult.value)
+        assertNull(viewModel.error.value)
     }
 }

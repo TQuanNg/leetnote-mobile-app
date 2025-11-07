@@ -3,6 +3,7 @@ package com.example.leetnote.data.api
 import com.example.leetnote.data.auth.TokenProvider
 import com.example.leetnote.data.auth.TokenStorage
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,6 +29,12 @@ object NetworkModule {
     @Singleton
     fun provideFirebaseAuth(): FirebaseAuth {
         return FirebaseAuth.getInstance()
+    }
+
+    @Provides
+    @Singleton
+    fun provideFirebaseStorage(): FirebaseStorage {
+        return FirebaseStorage.getInstance()
     }
 
     @Provides // function to provide the LeetnoteApiService dependency

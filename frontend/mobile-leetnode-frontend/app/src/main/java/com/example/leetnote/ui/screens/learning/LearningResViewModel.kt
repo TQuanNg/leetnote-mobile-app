@@ -21,7 +21,7 @@ data class PatternItem(
     val id: Int,
     val name: String,
     val concept: String,
-    val when_to_use: List<String>,
+    val whenToUse: List<String>,
     val approach: List<String>,
     val complexity: Complexity,
     val examples: List<String>,
