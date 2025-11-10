@@ -50,6 +50,7 @@ public class UserController {
         return ResponseEntity.ok(dto);
     }
 
+    /* unsued */
     @PutMapping("/profile-picture")
     public ResponseEntity<String> uploadProfilePicture(
             @AuthenticationPrincipal UserPrincipal userPrincipal,

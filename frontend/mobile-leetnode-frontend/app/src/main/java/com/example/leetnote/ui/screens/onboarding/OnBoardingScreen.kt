@@ -160,9 +160,17 @@ data class OnboardingPage(
 )
 
 val onboardingPages = listOf(
-    OnboardingPage(R.drawable.onboarding_1, "Welcome to LeetNote", "Discover how our app helps you solve problems faster."),
-    OnboardingPage(R.drawable.onboarding_2, "Stay Organized", "Track your progress and stay on top of your goals."),
-    OnboardingPage(R.drawable.onboarding_3, "Get Started", "Join now and enjoy the full experience.")
+    OnboardingPage(R.drawable.onboarding_1,
+        "Welcome to LeetNote",
+        "Discover how our app helps you solve problems faster."),
+
+    OnboardingPage(R.drawable.onboarding_2,
+        "Stay Organized",
+        "Track your progress and stay on top of your goals."),
+
+    OnboardingPage(R.drawable.onboarding_3,
+        "Get Started",
+        "Join now and enjoy the full experience.")
 )
 
 

@@ -1,6 +1,5 @@
 package com.example.leetnote_backend.service;
 
-
 import com.example.leetnote_backend.model.entity.Submission;
 import com.example.leetnote_backend.repository.SubmissionRepository;
 import org.springframework.stereotype.Service;

@@ -130,7 +130,10 @@ fun ProblemContentPreview() {
         title = "Two Sum",
         description = "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target." +
                 "\n\nYou may assume that each input would have exactly one solution, and you may not use the same element twice." +
-                "\n\nYou can return the answer in any order.\n\nExample 1:\nInput: nums = [2,7,11,15], target = 9\nOutput: [0,1]",
+                "\n\nYou can return the answer in any order." +
+                "\n\nExample 1:" +
+                "\nInput: nums = [2,7,11,15], target = 9" +
+                "\nOutput: [0,1]",
         difficulty = "Easy",
         isFavorite = false,
         isSolved = false,

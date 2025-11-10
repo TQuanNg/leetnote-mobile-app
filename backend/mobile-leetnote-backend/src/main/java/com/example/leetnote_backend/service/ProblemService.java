@@ -56,7 +56,7 @@ public class ProblemService {
         List<UserProblemStatus> userProblemStatuses = userProblemStatusRepository.findAllByUserId(userId);
 
         Map<Long, UserProblemStatus> userProblemStatusMap = userProblemStatuses.stream()
-                .collect(Collectors.toMap(UserProblemStatus::getProblemId, s ->s));
+                .collect(Collectors.toMap(UserProblemStatus::getProblemId, s -> s));
 
         List<ProblemListDTO> dto = page.getContent().stream()
                 .map(problem -> {

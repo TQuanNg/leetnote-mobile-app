@@ -17,7 +17,6 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class LeetcodeService {
-
     private final RestTemplate restTemplate;
     private final UserLeetcodeProfileRepository userLeetcodeProfileRepository;
     private final UserRepository userRepository;
@@ -94,18 +93,18 @@ public class LeetcodeService {
     private LeetcodeStatsDTO fetchStatsFromLeetcodeAPI(String username) {
         String url = "https://leetcode.com/graphql";
         String query = """
-            query getUserProfile($username: String!) {
-              matchedUser(username: $username) {
-                submitStats {
-                  acSubmissionNum {
-                    difficulty
-                    count
-                    submissions
-                  }
-                }
-              }
-            }
-        """;
+                    query getUserProfile($username: String!) {
+                      matchedUser(username: $username) {
+                        submitStats {
+                          acSubmissionNum {
+                            difficulty
+                            count
+                            submissions
+                          }
+                        }
+                      }
+                    }
+                """;
 
         Map<String, Object> request = Map.of(
                 "query", query,

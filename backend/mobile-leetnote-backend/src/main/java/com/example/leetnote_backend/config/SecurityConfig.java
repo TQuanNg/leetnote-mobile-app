@@ -27,7 +27,6 @@ public class SecurityConfig { // This tell Spring Security about the Firebase fi
                         .requestMatchers("/public/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                // 👇 add your Firebase filter into the chain
                 .addFilterBefore(firebaseAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

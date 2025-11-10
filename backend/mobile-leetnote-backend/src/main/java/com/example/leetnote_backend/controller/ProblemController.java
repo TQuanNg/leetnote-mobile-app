@@ -17,6 +17,7 @@ import java.util.List;
 @RequestMapping("/problems")
 public class ProblemController {
     private final ProblemService problemService;
+
     public ProblemController(ProblemService problemService) {
         this.problemService = problemService;
     }
@@ -29,7 +30,7 @@ public class ProblemController {
             @RequestParam(required = false) Boolean isSolved,
             @RequestParam(required = false) Boolean isFavorite,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size){
+            @RequestParam(defaultValue = "20") int size) {
         Long userId = userPrincipal.getUserId();
         Pageable pageable = PageRequest.of(page, size);
         return problemService.getAllProblems(userId, keyword, difficulties, isSolved, isFavorite, pageable);
@@ -56,10 +57,9 @@ public class ProblemController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestParam boolean isSolved,
             @RequestParam boolean isFavorite
-    )
-    {
+    ) {
         Long userId = userPrincipal.getUserId();
         ProblemListDTO updated = problemService.updateProblemStatus(userId, problemId, isSolved, isFavorite);
-        return  ResponseEntity.ok(updated);
+        return ResponseEntity.ok(updated);
     }
 }

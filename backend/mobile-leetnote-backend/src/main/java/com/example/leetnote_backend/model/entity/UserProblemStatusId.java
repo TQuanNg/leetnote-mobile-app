@@ -9,7 +9,7 @@ import java.util.Objects;
 
 @AllArgsConstructor
 @NoArgsConstructor
-//// This class represents a composite key for the UserProblemStatus entity.
+// This class represents a composite key for the UserProblemStatus entity.
 public class UserProblemStatusId implements Serializable {
     public Long userId;
     public Long problemId;

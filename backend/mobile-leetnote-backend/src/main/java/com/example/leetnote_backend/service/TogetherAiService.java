@@ -11,8 +11,8 @@ import java.util.Map;
 
 @Service
 public class TogetherAiService {
-    private WebClient webClient; // no longer final to allow test injection
     private final ObjectMapper mapper = new ObjectMapper();
+    private WebClient webClient; // no longer final to allow test injection
 
     public TogetherAiService() {
         this("");

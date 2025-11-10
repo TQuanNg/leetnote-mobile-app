@@ -179,7 +179,9 @@ fun LearningItemScreenPreview() {
         val sample = PatternItem(
             id = 1,
             name = "Two Pointers",
-            concept = "Use two indices moving through an array or string to solve problems efficiently. This technique is particularly useful for problems involving pairs, triplets, or when you need to compare elements from different positions.",
+            concept = "Use two indices moving through an array or string to solve problems efficiently." +
+                    " This technique is particularly useful for problems involving pairs, triplets," +
+                    " or when you need to compare elements from different positions.",
             whenToUse = listOf(
                 "Finding pairs with a specific sum in a sorted array",
                 "Checking if a string is a palindrome",
