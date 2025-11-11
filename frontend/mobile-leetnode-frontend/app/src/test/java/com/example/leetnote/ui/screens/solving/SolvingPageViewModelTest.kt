@@ -94,7 +94,8 @@ class SolvingPageViewModelTest {
         coEvery { android.util.Log.e(any(), any(), any<Throwable>()) } returns 0
         coEvery { android.util.Log.d(any(), any()) } returns 0
 
-        viewModel = SolvingPageViewModel(evaluationRepository, problemRepository)
+        // Inject testDispatcher as ioDispatcher so all coroutines run on test scheduler
+        viewModel = SolvingPageViewModel(evaluationRepository, problemRepository, testDispatcher)
     }
 
     @After
