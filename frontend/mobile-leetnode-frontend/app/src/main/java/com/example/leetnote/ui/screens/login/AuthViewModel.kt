@@ -12,8 +12,8 @@ import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.leetnote.R
-import com.example.leetnote.data.repository.UserRepository
 import com.example.leetnote.data.auth.TokenStorage
+import com.example.leetnote.data.repository.UserRepository
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
@@ -34,7 +34,7 @@ class AuthViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val tokenStorage: TokenStorage,
     private val userRepository: UserRepository,
-): ViewModel() {
+) : ViewModel() {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     private val _currentUser = MutableStateFlow<FirebaseUser?>(auth.currentUser)
@@ -49,10 +49,9 @@ class AuthViewModel @Inject constructor(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
-
     fun login(email: String, password: String) {
         auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task->
+            .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     _currentUser.value = auth.currentUser
                     _displayName.value = auth.currentUser?.displayName
@@ -66,7 +65,7 @@ class AuthViewModel @Inject constructor(
 
     fun signup(email: String, password: String) {
         auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task->
+            .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     _currentUser.value = auth.currentUser
                     _errorMessage.value = null
@@ -90,8 +89,6 @@ class AuthViewModel @Inject constructor(
             serverClientId = context.getString(R.string.web_client_id)
         ).build()
 
-
-
         val request = GetCredentialRequest.Builder()
             .addCredentialOption(signInWithGoogleOption)
             .build()
@@ -105,10 +102,9 @@ class AuthViewModel @Inject constructor(
                     context = context,
                 )
                 handleSignIn(result)
-            } catch(e: GetCredentialCancellationException) {
+            } catch (e: GetCredentialCancellationException) {
                 Log.e(TAG, "User cancelled the credential request", e)
-            }
-            catch (e: GetCredentialException) {
+            } catch (e: GetCredentialException) {
                 e.printStackTrace()
             }
         }
@@ -166,7 +162,6 @@ class AuthViewModel @Inject constructor(
             Log.e("AuthViewModel", "Failed to fetch ID token", it)
         }
     }
-
 
     fun logout() {
         auth.signOut()

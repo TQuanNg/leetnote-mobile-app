@@ -44,7 +44,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.leetnote.data.model.EvaluationDetailDTO
 import com.example.leetnote.ui.components.CustomCard
 
@@ -88,6 +87,7 @@ fun EvaluationDetailScreen(
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
+
                 error != null -> {
                     Text(
                         text = error ?: "Unknown error occurred",
@@ -98,12 +98,14 @@ fun EvaluationDetailScreen(
                             .padding(16.dp)
                     )
                 }
+
                 uiState.selectedEvaluationDetail != null -> {
                     EvaluationDetailContent(
                         evaluationDetail = uiState.selectedEvaluationDetail!!,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
+
                 else -> {
                     Text(
                         text = "No evaluation details found",

@@ -7,17 +7,17 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import com.example.leetnote.data.model.LeetProblem
+import com.example.leetnote.data.repository.HomeRepository
 import com.example.leetnote.data.repository.paging.ProblemPagingSource
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
-import com.example.leetnote.data.model.LeetProblem
-import com.example.leetnote.data.repository.HomeRepository
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -33,7 +33,7 @@ data class FilterParams(
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val repository: HomeRepository,
-): ViewModel() {
+) : ViewModel() {
     private val _searchQuery = MutableStateFlow("")
     private val _selectedDifficulties = MutableStateFlow<List<String>>(emptyList())
     private val _filterSolved = MutableStateFlow<Boolean?>(null)
@@ -53,7 +53,8 @@ class HomeViewModel @Inject constructor(
         FilterParams(query, difficulties, solved, favorite)
     }
 
-    private val _pagedProblemsMutable = MutableStateFlow<PagingData<LeetProblem>>(PagingData.empty())
+    private val _pagedProblemsMutable =
+        MutableStateFlow<PagingData<LeetProblem>>(PagingData.empty())
     val pagedProblems: StateFlow<PagingData<LeetProblem>> = _pagedProblemsMutable.asStateFlow()
 
 
@@ -78,10 +79,21 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun updateQuery(query: String) { _searchQuery.value = query }
-    fun updateDifficulties(difficulties: List<String>) { _selectedDifficulties.value = difficulties }
-    fun updateFilterSolved(solved: Boolean?) { _filterSolved.value = solved }
-    fun updateFilterFavorite(favorite: Boolean?) { _filterFavorite.value = favorite }
+    fun updateQuery(query: String) {
+        _searchQuery.value = query
+    }
+
+    fun updateDifficulties(difficulties: List<String>) {
+        _selectedDifficulties.value = difficulties
+    }
+
+    fun updateFilterSolved(solved: Boolean?) {
+        _filterSolved.value = solved
+    }
+
+    fun updateFilterFavorite(favorite: Boolean?) {
+        _filterFavorite.value = favorite
+    }
 
     fun toggleSolved(problem: LeetProblem) {
         viewModelScope.launch {

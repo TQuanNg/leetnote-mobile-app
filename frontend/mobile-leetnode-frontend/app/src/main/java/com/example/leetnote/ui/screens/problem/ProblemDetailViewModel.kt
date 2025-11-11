@@ -15,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProblemDetailViewModel @Inject constructor(
     private val repository: HomeRepository
-): ViewModel() {
+) : ViewModel() {
     private val _problemDetail = MutableStateFlow<ProblemDetailDTO?>(null)
     val problemDetail: StateFlow<ProblemDetailDTO?> = _problemDetail.asStateFlow()
 

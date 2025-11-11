@@ -3,8 +3,6 @@ package com.example.leetnote.ui.screens.profile
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
-import androidx.compose.ui.platform.LocalContext
-import com.example.leetnote.utils.PermissionUtils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,6 +19,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -50,19 +50,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.example.leetnote.R
+import com.example.leetnote.data.model.EvaluationListItemDTO
 import com.example.leetnote.ui.components.ShadowButton
 import com.example.leetnote.ui.navigation.Screen
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.navigation.NavController
-import com.example.leetnote.data.model.EvaluationListItemDTO
+import com.example.leetnote.utils.PermissionUtils
 
 @Composable
 fun ProfileScreen(
@@ -121,7 +121,12 @@ fun ProfileScreen(
                 // Find the evaluation to get problemId
                 val evaluation = state.evaluations.find { it.evaluationId == evaluationId }
                 evaluation?.let {
-                    navController.navigate(Screen.EvaluationDetail.createRoute(it.problemId, evaluationId))
+                    navController.navigate(
+                        Screen.EvaluationDetail.createRoute(
+                            it.problemId,
+                            evaluationId
+                        )
+                    )
                 }
             }
         )
@@ -204,6 +209,7 @@ fun ProfileContent(
                     )
                 }
             }
+
             1 -> {
                 // Evaluations content
                 EvaluationsSection(
@@ -682,9 +688,11 @@ private fun ProfileImageActionSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss
     ) {
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
             Button(onClick = onUpload, modifier = Modifier.fillMaxWidth()) {
                 Text("Upload photo")
             }

@@ -15,11 +15,13 @@ sealed class Screen(
 
     object Onboarding : Screen("onboarding", "Onboarding", R.drawable.login_icon)
 
-    object Home : Screen("home",
+    object Home : Screen(
+        "home",
         "LeetNote",
         R.drawable.home_icon,
         R.drawable.settings_icon,
-        )
+    )
+
     object Profile : Screen("profile", "Profile", R.drawable.account_icon)
     object Learning : Screen("learning", "Learning", R.drawable.learning_icon)
     object Settings : Screen("settings", "Settings", R.drawable.home_icon)
@@ -39,7 +41,7 @@ sealed class Screen(
     object Solution : Screen(
         "solution/{problemId}",
         "Solution",
-        ) {
+    ) {
         fun createRoute(problemId: Long) = "solution/$problemId"
     }
 
@@ -55,7 +57,8 @@ sealed class Screen(
         "evaluationDetail/{problemId}/{evaluationId}",
         "Evaluation Detail",
     ) {
-        fun createRoute(problemId: Long, evaluationId: Long) = "evaluationDetail/$problemId/$evaluationId"
+        fun createRoute(problemId: Long, evaluationId: Long) =
+            "evaluationDetail/$problemId/$evaluationId"
     }
 
     object LearningItem : Screen("learningItem/{patternId}", "Learning Item") {
@@ -64,6 +67,16 @@ sealed class Screen(
 
     companion object {
         val bottomNavScreens = listOf(Home, Profile, Learning)
-        val allScreens = listOf(Home, Profile, Learning, Settings, Problem, Solution, Solving, Evaluation, LearningItem)
+        val allScreens = listOf(
+            Home,
+            Profile,
+            Learning,
+            Settings,
+            Problem,
+            Solution,
+            Solving,
+            Evaluation,
+            LearningItem
+        )
     }
 }

@@ -9,9 +9,25 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,7 +36,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.leetnote.R
@@ -40,18 +55,18 @@ fun FilterSection(
     AnimatedVisibility(
         visible = isVisible,
         enter = fadeIn(animationSpec = tween(300)) +
-               scaleIn(
-                   animationSpec = spring(
-                       dampingRatio = Spring.DampingRatioMediumBouncy,
-                       stiffness = Spring.StiffnessLow
-                   ),
-                   initialScale = 0.8f
-               ),
+                scaleIn(
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessLow
+                    ),
+                    initialScale = 0.8f
+                ),
         exit = fadeOut(animationSpec = tween(200)) +
-               scaleOut(
-                   animationSpec = tween(200),
-                   targetScale = 0.8f
-               )
+                scaleOut(
+                    animationSpec = tween(200),
+                    targetScale = 0.8f
+                )
     ) {
         Dialog(
             onDismissRequest = onClose,

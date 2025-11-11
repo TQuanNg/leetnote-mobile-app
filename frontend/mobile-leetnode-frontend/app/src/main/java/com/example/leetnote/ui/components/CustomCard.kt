@@ -54,7 +54,9 @@ fun testScreen() {
         CustomCard(
             title = "Sample Title",
             description = "This is a sample description for the custom card component.",
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             cornerRadius = 16.dp,
             shadowOffsetX = 4.dp,
             shadowOffsetY = 4.dp,
@@ -66,7 +68,9 @@ fun testScreen() {
             title = "Two Pointers",
             icon = Icons.Filled.Code,
             onClick = { /* handle click */ },
-            modifier = Modifier.fillMaxWidth().padding(16.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
         )
     }
 }
@@ -90,7 +94,7 @@ fun CustomCard(
     descriptionColor: Color = Color.Black,
     onClick: () -> Unit = {}
 ) {
-    Box(modifier = modifier.padding(bottom = 16.dp) ) {
+    Box(modifier = modifier.padding(bottom = 16.dp)) {
         // Shadow card
         Card(
             modifier = Modifier
@@ -112,10 +116,11 @@ fun CustomCard(
             elevation = CardDefaults.cardElevation(0.dp)
         ) {
             Column(modifier = Modifier.padding(paddingContent)) {
-                Text(text = title,
+                Text(
+                    text = title,
                     style = MaterialTheme.typography.titleMedium.copy(
-                    fontSize = titleSize,
-                    fontWeight = titleWeight ?: FontWeight.Normal,
+                        fontSize = titleSize,
+                        fontWeight = titleWeight ?: FontWeight.Normal,
                         color = titleColor
                     )
                 )
@@ -275,7 +280,6 @@ fun StyledDescriptionText(
         )
     )
 }
-
 
 
 @Preview

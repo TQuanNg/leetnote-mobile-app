@@ -35,10 +35,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.leetnote.R
 import com.example.leetnote.ui.components.ShadowButton
 import com.example.leetnote.ui.navigation.Screen
 import kotlinx.coroutines.launch
-import com.example.leetnote.R
 
 @Composable
 fun LoginScreen(
@@ -67,19 +67,19 @@ fun LoginScreen(
         onEmailChange = {
             email = it
             localError = null
-                        },
+        },
         password = password,
         onPasswordChange = {
             password = it
             localError = null
-                           },
+        },
         onLoginClick = {
             if (email.isBlank() || password.isBlank()) {
                 localError = "Please fill in both email and password"
             } else {
                 viewModel.login(email, password)
             }
-                       },
+        },
         onRegisterClick = { navController.navigate(Screen.Signup.route) },
         onGoogleSignInClick = {
             coroutineScope.launch { viewModel.initGoogleLogin() }

@@ -76,7 +76,10 @@ class FirebaseStorageService @Inject constructor(
                 item.delete().await()
             }
         } catch (e: Exception) {
-            android.util.Log.w("FirebaseStorageService", "Failed to delete user images: ${e.message}")
+            android.util.Log.w(
+                "FirebaseStorageService",
+                "Failed to delete user images: ${e.message}"
+            )
         }
     }
 }

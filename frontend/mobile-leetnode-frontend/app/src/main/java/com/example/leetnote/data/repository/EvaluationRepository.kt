@@ -7,7 +7,6 @@ import com.example.leetnote.data.model.EvaluationListItemDTO
 import com.example.leetnote.data.model.SubmissionDTO
 import javax.inject.Inject
 
-
 class EvaluationRepository @Inject constructor(
     private val api: LeetnoteApiService
 ) {

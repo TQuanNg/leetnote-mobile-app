@@ -40,7 +40,7 @@ class LearningResViewModel @Inject constructor(
     private val _patterns = MutableStateFlow<List<PatternItem>>(emptyList())
     val patterns: StateFlow<List<PatternItem>> = _patterns
 
-    init{
+    init {
         loadPatterns()
     }
 

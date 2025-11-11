@@ -13,7 +13,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val themeManager: ThemeManager
-): ViewModel() {
+) : ViewModel() {
 
     val isDarkTheme: StateFlow<Boolean> = themeManager.isDarkTheme
         .stateIn(

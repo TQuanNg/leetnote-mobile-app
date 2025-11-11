@@ -13,12 +13,12 @@ import javax.inject.Inject
 @HiltViewModel
 class OnboardingViewModel @Inject constructor(
     private val repository: OnboardingRepository
-): ViewModel() {
+) : ViewModel() {
     val isOnboardingCompleted: StateFlow<Boolean?> =
         repository.isOnboardingCompleted()
             .stateIn(
-                scope = viewModelScope, 
-                started = SharingStarted.WhileSubscribed(5000L), 
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000L),
                 initialValue = null
             )
 

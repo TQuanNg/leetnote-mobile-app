@@ -14,7 +14,7 @@ class HomeRepository @Inject constructor(
         keyword: String? = null,
         difficulties: List<String>? = null,
         isSolved: Boolean? = null,
-        isFavorite: Boolean? =null,
+        isFavorite: Boolean? = null,
         page: Int = 1,
         pageSize: Int = 20
     ): PageResponse<ProblemListDTO> {

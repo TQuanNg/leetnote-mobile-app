@@ -19,22 +19,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.leetnote.ui.components.CustomCard
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.leetnote.data.model.ProblemDetailDTO
 import com.example.leetnote.data.model.SolutionDTO
+import com.example.leetnote.ui.components.CustomCard
 import com.example.leetnote.ui.components.ShadowButton
 import com.example.leetnote.ui.navigation.Screen
 
@@ -107,7 +104,7 @@ fun SolvingScreen(
 }
 
 @Composable
-fun SolvingContent (
+fun SolvingContent(
     problemDetail: ProblemDetailDTO?,
     solutionText: String,
     isLoading: Boolean,
@@ -115,7 +112,6 @@ fun SolvingContent (
     onSubmit: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var expanded by remember { mutableStateOf(false) }
 
 
     Column(
@@ -129,7 +125,8 @@ fun SolvingContent (
             description = problemDetail?.description ?: "Loading description...",
             titleSize = 24.sp,
             titleWeight = FontWeight.Bold,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f)
                 .verticalScroll(rememberScrollState())
         )
 

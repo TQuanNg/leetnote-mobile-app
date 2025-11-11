@@ -13,7 +13,7 @@ data class EvaluationDTO(
     val feedback: List<String>
 )
 
-data class EvaluationDetailDTO (
+data class EvaluationDetailDTO(
     val evaluationId: Long,
     val problemId: Long,
     val problemTitle: String,

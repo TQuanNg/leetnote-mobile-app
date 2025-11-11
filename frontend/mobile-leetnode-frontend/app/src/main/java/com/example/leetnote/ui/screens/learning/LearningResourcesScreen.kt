@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.DataObject
 import androidx.compose.material.icons.filled.FindInPage
@@ -25,18 +27,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.leetnote.data.model.LearningTopic
 import com.example.leetnote.R
+import com.example.leetnote.data.model.LearningTopic
 import com.example.leetnote.ui.components.PatternCard
-import androidx.compose.runtime.getValue
 import com.example.leetnote.ui.navigation.Screen
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.automirrored.filled.List
 
 // Function to map pattern IDs to specific Material Icons
 fun getPatternIcon(patternId: Int): ImageVector {

@@ -61,7 +61,9 @@ fun ProblemContent(
     onViewSolutionsClick: () -> Unit
 ) {
     Column(
-        modifier = modifier.fillMaxSize().padding(16.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         when {
@@ -89,7 +91,8 @@ fun ProblemContent(
                         append(problemDetail.description)
                         append("\n\n")
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .weight(1f)
                         .verticalScroll(rememberScrollState())
                 )

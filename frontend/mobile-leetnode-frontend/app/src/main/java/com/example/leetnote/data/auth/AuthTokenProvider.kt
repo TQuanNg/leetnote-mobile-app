@@ -7,6 +7,6 @@ import javax.inject.Singleton
 @Singleton
 class AuthTokenProvider @Inject constructor(
     private val tokenStorage: TokenStorage
-): TokenProvider {
+) : TokenProvider {
     override suspend fun getToken(): String? = tokenStorage.token.firstOrNull()
 }

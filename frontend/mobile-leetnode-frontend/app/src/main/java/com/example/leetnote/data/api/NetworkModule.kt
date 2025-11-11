@@ -14,10 +14,10 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
-/*
+/**
  * This module tells Hilt how to provide the LeetnoteApiService dependency.
  * It uses the RetrofitInstance to create an instance of LeetnoteApiService.
- */
+ **/
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {

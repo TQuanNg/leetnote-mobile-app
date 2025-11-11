@@ -23,11 +23,12 @@ import com.example.leetnote.R
 @Composable
 fun LoadingScreen() {
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .background(Color.White),
         contentAlignment = Alignment.Center
     ) {
-        Column (
+        Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {

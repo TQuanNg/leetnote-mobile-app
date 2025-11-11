@@ -15,7 +15,7 @@ class AuthInterceptor @Inject constructor(
     private val tokenProvider: TokenProvider,
     private val auth: FirebaseAuth,
     private val tokenStorage: TokenStorage,
-): Interceptor {
+) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         var request = chain.request()

@@ -4,14 +4,13 @@ import android.net.http.HttpException
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.leetnote.data.model.ProblemDetailDTO
-import com.example.leetnote.data.model.SubmissionDTO
 import com.example.leetnote.data.model.EvaluationDetail
 import com.example.leetnote.data.model.EvaluationListItemDTO
+import com.example.leetnote.data.model.ProblemDetailDTO
+import com.example.leetnote.data.model.SubmissionDTO
 import com.example.leetnote.data.repository.EvaluationRepository
 import com.example.leetnote.data.repository.ProblemRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,12 +22,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import java.io.IOException
+import javax.inject.Inject
 
 @HiltViewModel
 class SolvingPageViewModel @Inject constructor(
     private val evaluationRepository: EvaluationRepository,
     private val problemRepository: ProblemRepository
-): ViewModel() {
+) : ViewModel() {
 
     private val _problemDetail = MutableStateFlow<ProblemDetailDTO?>(null)
     val problemDetail: StateFlow<ProblemDetailDTO?> = _problemDetail.asStateFlow()

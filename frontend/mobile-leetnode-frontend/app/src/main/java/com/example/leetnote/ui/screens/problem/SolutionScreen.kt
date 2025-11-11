@@ -36,9 +36,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.leetnote.ui.components.CustomCard
-
 
 @Composable
 fun SolutionScreen(
@@ -147,7 +145,8 @@ fun SolutionScreen(
                     fontWeight = FontWeight.Bold
                 )
                 Row(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .height(IntrinsicSize.Min), // ensure equal height based on tallest child
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
@@ -197,16 +196,19 @@ fun HighlightedCodeBlock(code: String) {
                 ) {
                     append("$token ")
                 }
+
                 token.startsWith("\"") || token.startsWith("'") -> withStyle(
                     style = SpanStyle(color = Color(0xFFD69D85)) // Strings orange
                 ) {
                     append("$token ")
                 }
+
                 token.all { it.isDigit() } -> withStyle(
                     style = SpanStyle(color = Color(0xFFB5CEA8)) // Numbers green
                 ) {
                     append("$token ")
                 }
+
                 else -> withStyle(
                     style = SpanStyle(color = Color.White)
                 ) {
@@ -281,7 +283,7 @@ data class MockProblem(
 @Preview(showBackground = true)
 @Composable
 fun SolutionScreenPreview() {
-    val mockProblem = MockProblem(
+    MockProblem(
         id = 1,
         title = "Two Sum",
         description = "Easy",

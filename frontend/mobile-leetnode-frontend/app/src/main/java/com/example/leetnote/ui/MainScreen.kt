@@ -68,7 +68,7 @@ fun MainScreen(
             }
         },
         bottomBar = {
-            if (currentRoute in Screen.bottomNavScreens.map { it.route}) {
+            if (currentRoute in Screen.bottomNavScreens.map { it.route }) {
                 BottomNavBar(navController = navController)
             }
 
@@ -92,10 +92,12 @@ fun AppBar(
     var showGuidancePopup by remember { mutableStateOf(false) }
 
     TopAppBar(
-        title = { Text(
-            text = currentScreen.title,
-            fontWeight = FontWeight.Bold
-        ) },
+        title = {
+            Text(
+                text = currentScreen.title,
+                fontWeight = FontWeight.Bold
+            )
+        },
         navigationIcon = {
             if (canNavigateBack) {
                 IconButton(onClick = navigateUp) {
@@ -118,9 +120,11 @@ fun AppBar(
                         is Screen.Home -> {
                             navController.navigate(Screen.Settings.route)
                         }
+
                         is Screen.Solving -> {
                             showGuidancePopup = true
                         }
+
                         else -> {}
                     }
                 }) {

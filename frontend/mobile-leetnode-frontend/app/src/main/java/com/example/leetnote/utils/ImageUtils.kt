@@ -95,7 +95,8 @@ object ImageUtils {
         return try {
             val input = context.contentResolver.openInputStream(selectedImage)
             val ei = ExifInterface(input!!)
-            val orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+            val orientation =
+                ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
             input.close()
 
             when (orientation) {
