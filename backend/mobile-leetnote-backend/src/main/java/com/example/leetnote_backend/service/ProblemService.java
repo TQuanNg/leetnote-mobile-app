@@ -9,6 +9,8 @@ import com.example.leetnote_backend.repository.ProblemRepository;
 import com.example.leetnote_backend.repository.UserProblemStatusRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +33,11 @@ public class ProblemService {
     @Autowired
     private UserProblemStatusRepository userProblemStatusRepository;
 
+    /**
+     * Get all problems with filters - cached per user and filter combination
+     * Cache expires after 5 minutes to balance performance and data freshness
+     */
+    @Cacheable(value = "problemLists", key = "#userId + '_' + #keyword + '_' + #difficulties + '_' + #isSolved + '_' + #isFavorite + '_' + #pageable.pageNumber")
     public Page<ProblemListDTO> getAllProblems(
             Long userId,
             String keyword,
@@ -76,6 +83,11 @@ public class ProblemService {
         return new PageImpl<>(dto, pageable, page.getTotalElements());
     }
 
+    /**
+     * Get problem detail by ID - cached per problem and user
+     * Cache expires after 10 minutes
+     */
+    @Cacheable(value = "problemDetails", key = "#problemId + '_' + #userId")
     public ProblemDetailDTO getProblemDetail(
             Long problemId,
             Long userId
@@ -111,6 +123,10 @@ public class ProblemService {
         );
     }
 
+    /**
+     * Update problem status (favorite/solved) - evicts related caches
+     */
+    @CacheEvict(value = {"problemLists", "problemDetails"}, allEntries = true)
     public ProblemListDTO updateProblemStatus(
             Long userId,
             Long problemId,

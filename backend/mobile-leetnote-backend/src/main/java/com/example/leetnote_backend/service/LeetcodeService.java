@@ -7,6 +7,8 @@ import com.example.leetnote_backend.model.entity.UserLeetcodeProfile;
 import com.example.leetnote_backend.repository.UserLeetcodeProfileRepository;
 import com.example.leetnote_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -23,7 +25,9 @@ public class LeetcodeService {
 
     /**
      * Get user's LeetCode stats from database (if exists), otherwise return null
+     * Cached for 5 minutes to reduce database hits
      */
+    @Cacheable(value = "userLeetcodeStats", key = "#userId")
     public LeetcodeStatsDTO getUserStats(Long userId) {
         return userLeetcodeProfileRepository.findByUserId(userId)
                 .map(this::convertToDTO)
@@ -32,7 +36,9 @@ public class LeetcodeService {
 
     /**
      * Save or update LeetCode username for a user and fetch fresh stats from LeetCode API
+     * Evicts cache after updating
      */
+    @CacheEvict(value = "userLeetcodeStats", key = "#userId")
     public LeetcodeStatsDTO saveLeetcodeUsername(Long userId, String leetcodeUsername) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
@@ -60,7 +66,9 @@ public class LeetcodeService {
 
     /**
      * Refresh stats from LeetCode API for existing user
+     * Evicts cache after updating
      */
+    @CacheEvict(value = "userLeetcodeStats", key = "#userId")
     public LeetcodeStatsDTO refreshStats(Long userId) {
         UserLeetcodeProfile profile = userLeetcodeProfileRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("No LeetCode profile found for user. Please set username first."));
@@ -83,14 +91,17 @@ public class LeetcodeService {
     /**
      * Update LeetCode username (change it)
      */
+    @CacheEvict(value = "userLeetcodeStats", key = "#userId")
     public LeetcodeStatsDTO updateLeetcodeUsername(Long userId, String newUsername) {
         return saveLeetcodeUsername(userId, newUsername);
     }
 
     /**
      * Fetch stats from LeetCode GraphQL API
+     * Cached by username for 10 minutes to avoid hitting LeetCode API too often
      */
-    private LeetcodeStatsDTO fetchStatsFromLeetcodeAPI(String username) {
+    @Cacheable(value = "leetcodeApiStats", key = "#username")
+    public LeetcodeStatsDTO fetchStatsFromLeetcodeAPI(String username) {
         String url = "https://leetcode.com/graphql";
         String query = """
                     query getUserProfile($username: String!) {
@@ -156,3 +167,4 @@ public class LeetcodeService {
         );
     }
 }
+

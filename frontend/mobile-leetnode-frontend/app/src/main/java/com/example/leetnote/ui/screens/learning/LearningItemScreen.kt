@@ -64,7 +64,7 @@ fun LearningItemContent(
 
             CustomCard(
                 title = "✅ When to Use",
-                description = pattern.whenToUse.joinToString("\n") { "• $it" },
+                description = (pattern.whenToUse ?: emptyList()).joinToString("\n") { "• $it" }.ifEmpty { "No information available" },
                 modifier = Modifier.fillMaxWidth(),
                 backgroundColor = Color(0xFFE8F5E8), // Light green
                 titleSize = 18.sp,
@@ -74,7 +74,7 @@ fun LearningItemContent(
 
             CustomCard(
                 title = "🔧 Approach",
-                description = pattern.approach.joinToString("\n") { "• $it" },
+                description = (pattern.approach ?: emptyList()).joinToString("\n") { "• $it" }.ifEmpty { "No information available" },
                 modifier = Modifier.fillMaxWidth(),
                 backgroundColor = Color(0xFFE3F2FD), // Light blue
                 titleSize = 18.sp,
@@ -86,7 +86,7 @@ fun LearningItemContent(
 
             CustomCard(
                 title = "📝 Examples",
-                description = pattern.examples.joinToString("\n") { "• $it" },
+                description = (pattern.examples ?: emptyList()).joinToString("\n") { "• $it" }.ifEmpty { "No information available" },
                 modifier = Modifier.fillMaxWidth(),
                 backgroundColor = Color(0xFFFFF3E0), // Light orange
                 titleSize = 18.sp,
@@ -96,7 +96,7 @@ fun LearningItemContent(
 
             CustomCard(
                 title = "⭐ Pro Tips",
-                description = pattern.tips.joinToString("\n") { "• $it" },
+                description = (pattern.tips ?: emptyList()).joinToString("\n") { "• $it" }.ifEmpty { "No information available" },
                 modifier = Modifier.fillMaxWidth(),
                 backgroundColor = Color(0xFFFCE4EC), // Light pink
                 titleSize = 18.sp,
