@@ -5,10 +5,7 @@ import com.example.leetnote_backend.model.entity.Submission;
 import com.example.leetnote_backend.service.SubmissionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/submissions")
@@ -20,9 +17,9 @@ public class SubmissionController {
         this.submissionService = submissionService;
     }
 
-    @GetMapping("/last")
+    @GetMapping("/{problemId}")
     public ResponseEntity<Submission> getLastSubmission(
-            @RequestParam Long problemId,
+            @PathVariable Long problemId,
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         Long userId = userPrincipal.getUserId();

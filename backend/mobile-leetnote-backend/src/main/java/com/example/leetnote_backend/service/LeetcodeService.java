@@ -1,5 +1,7 @@
 package com.example.leetnote_backend.service;
 
+import com.example.leetnote_backend.exception.BadRequestException;
+import com.example.leetnote_backend.exception.ResourceNotFoundException;
 import com.example.leetnote_backend.model.DTO.LeetcodeStatsDTO;
 import com.example.leetnote_backend.model.entity.User;
 import com.example.leetnote_backend.model.entity.UserLeetcodeProfile;
@@ -38,7 +40,7 @@ public class LeetcodeService {
     @CacheEvict(value = "userLeetcodeStats", key = "#userId")
     public LeetcodeStatsDTO saveLeetcodeUsername(Long userId, String leetcodeUsername) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
         // Fetch fresh stats from LeetCode API (now uses separate service - caching works!)
         LeetcodeStatsDTO stats = leetcodeApiService.fetchStatsFromLeetcodeAPI(leetcodeUsername);
@@ -68,7 +70,7 @@ public class LeetcodeService {
     @CacheEvict(value = "userLeetcodeStats", key = "#userId")
     public LeetcodeStatsDTO refreshStats(Long userId) {
         UserLeetcodeProfile profile = userLeetcodeProfileRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("No LeetCode profile found for user. Please set username first."));
+                .orElseThrow(() -> new BadRequestException("No LeetCode profile found for user. Please set username first."));
 
         // Fetch fresh stats from LeetCode API (now uses separate service - caching works!)
         LeetcodeStatsDTO stats = leetcodeApiService.fetchStatsFromLeetcodeAPI(profile.getUsername());

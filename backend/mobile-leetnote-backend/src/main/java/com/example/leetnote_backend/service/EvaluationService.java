@@ -1,5 +1,6 @@
 package com.example.leetnote_backend.service;
 
+import com.example.leetnote_backend.exception.BadRequestException;
 import com.example.leetnote_backend.model.DTO.EvaluationDTO;
 import com.example.leetnote_backend.model.DTO.EvaluationDetailDTO;
 import com.example.leetnote_backend.model.DTO.EvaluationListItemDTO;
@@ -67,9 +68,9 @@ public class EvaluationService {
 
             return evaluationDto;
         } catch (ResourceAccessException e) {
-            throw new RuntimeException("Failed to connect to the evaluation service", e);
+            throw new BadRequestException("Failed to connect to the evaluation service", e);
         } catch (HttpClientErrorException | HttpServerErrorException ex) {
-            throw new RuntimeException("Evaluation service error: " + ex.getStatusCode());
+            throw new BadRequestException("Evaluation service error: " + ex.getStatusCode());
         }
     }
 

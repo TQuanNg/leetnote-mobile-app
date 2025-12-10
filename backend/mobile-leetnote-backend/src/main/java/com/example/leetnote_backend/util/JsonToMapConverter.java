@@ -1,5 +1,6 @@
 package com.example.leetnote_backend.util;
 
+import com.example.leetnote_backend.exception.BadRequestException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;
@@ -18,7 +19,7 @@ public class JsonToMapConverter implements AttributeConverter<Map<String, Intege
         try {
             return objectMapper.writeValueAsString(map);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to convert Map to JSON string.", e);
+            throw new BadRequestException("Failed to convert Map to JSON string.", e);
         }
     }
 
@@ -27,7 +28,7 @@ public class JsonToMapConverter implements AttributeConverter<Map<String, Intege
         try {
             return objectMapper.readValue(json, new TypeReference<>() {});
         } catch (Exception e) {
-            throw new RuntimeException("Failed to convert JSON string to Map.", e);
+            throw new BadRequestException("Failed to convert JSON string to Map.", e);
         }
     }
 }

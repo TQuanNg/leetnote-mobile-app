@@ -1,5 +1,6 @@
 package com.example.leetnote_backend.service;
 
+import com.example.leetnote_backend.exception.ResourceNotFoundException;
 import com.example.leetnote_backend.model.DTO.GraphQLResponse;
 import com.example.leetnote_backend.model.DTO.LeetcodeStatsDTO;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +59,7 @@ public class LeetcodeCacheService {
         GraphQLResponse body = response.getBody();
 
         if (body == null || body.getData() == null || body.getData().getMatchedUser() == null) {
-            throw new RuntimeException("User not found: " + username);
+            throw new ResourceNotFoundException("LeetCode user", "username", username);
         }
 
         // Extract stats
@@ -78,4 +79,3 @@ public class LeetcodeCacheService {
         return new LeetcodeStatsDTO(username, total, easy, medium, hard);
     }
 }
-

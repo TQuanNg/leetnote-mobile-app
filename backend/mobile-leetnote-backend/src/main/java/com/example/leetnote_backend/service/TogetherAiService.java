@@ -1,5 +1,6 @@
 package com.example.leetnote_backend.service;
 
+import com.example.leetnote_backend.exception.BadRequestException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,9 +60,9 @@ public class TogetherAiService {
                 }
             }
 
-            throw new RuntimeException("Invalid response format from Together API");
+            throw new BadRequestException("Invalid response format from Together API");
         } catch (Exception e) {
-            throw new RuntimeException("Error calling Together API: " + e.getMessage(), e);
+            throw new BadRequestException("Error calling Together API: " + e.getMessage(), e);
         }
     }
 
