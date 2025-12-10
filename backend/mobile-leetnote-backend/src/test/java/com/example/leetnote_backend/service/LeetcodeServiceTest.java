@@ -166,7 +166,7 @@ public class LeetcodeServiceTest {
 
         RuntimeException ex = assertThrows(RuntimeException.class,
                 () -> service.saveLeetcodeUsername(userId, username));
-        assertTrue(ex.getMessage().contains("User not found with id: " + userId));
+        assertTrue(ex.getMessage().contains("User not found with id: '" + userId + "'"));
 
         verify(userLeetcodeProfileRepository, never()).save(any());
         verify(leetcodeCacheService, never()).fetchStatsFromLeetcodeAPI(any());

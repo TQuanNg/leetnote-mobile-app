@@ -23,8 +23,6 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -86,8 +84,7 @@ public class ProblemControllerTest {
 
         when(problemService.getProblemDetail(1L, 1L)).thenReturn(detail);
 
-        mockMvc.perform(get("/problems/detail")
-                        .param("problemId", "1")
+        mockMvc.perform(get("/problems/1")
                         .with(authenticated()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
@@ -102,13 +99,9 @@ public class ProblemControllerTest {
     void getProblemById_ThrowsWhenNotFound() throws Exception {
         when(problemService.getProblemDetail(1L, 1L)).thenReturn(null);
 
-        Exception ex = assertThrows(Exception.class, () ->
-                mockMvc.perform(get("/problems/detail")
-                                .param("problemId", "1")
-                                .with(authenticated()))
-                        .andReturn()
-        );
-        assertTrue(ex.getMessage().contains("Problem not found with id: 1"));
+        mockMvc.perform(get("/problems/1")
+                        .with(authenticated()))
+                .andExpect(status().isNotFound());
     }
 
     @Test

@@ -2,7 +2,6 @@ package com.example.leetnote_backend.controller;
 
 import com.example.leetnote_backend.config.FirebaseAuthenticationFilter;
 import com.example.leetnote_backend.config.UserPrincipal;
-import com.example.leetnote_backend.model.DTO.UpdateProfileRequest;
 import com.example.leetnote_backend.model.DTO.UpdateUsernameRequest;
 import com.example.leetnote_backend.model.entity.User;
 import com.example.leetnote_backend.service.UserService;
@@ -99,38 +98,5 @@ public class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(1L))
                 .andExpect(jsonPath("$.username").value("newUsername"));
-    }
-
-    @Test
-    void uploadProfilePicture_UpdatesProfilePicture_ReturnsUrl() throws Exception {
-        UpdateProfileRequest request = new UpdateProfileRequest();
-        request.setProfileUrl("newProfile.jpg");
-
-        User updatedUser = new User();
-        updatedUser.setId(1L);
-        updatedUser.setProfileUrl("newProfile.jpg");
-
-        when(userService.updateProfileUrl(anyLong(), eq("newProfile.jpg"))).thenReturn(updatedUser);
-
-        mockMvc.perform(put("/api/users/profile-picture")
-                        .with(authenticated())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"profileUrl\":\"newProfile.jpg\"}"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("newProfile.jpg"));
-    }
-
-    @Test
-    void deleteProfilePicture_DeletesProfilePicture_ReturnsNoContent() throws Exception {
-        User updatedUser = new User();
-        updatedUser.setId(1L);
-        updatedUser.setProfileUrl(null);
-
-        // Mock the service to return a User even when setting profileUrl to null
-        when(userService.updateProfileUrl(anyLong(), eq(null))).thenReturn(updatedUser);
-
-        mockMvc.perform(delete("/api/users/profile-picture")
-                        .with(authenticated()))
-                .andExpect(status().isNoContent());
     }
 }

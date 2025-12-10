@@ -21,6 +21,9 @@ public class UserServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private UserCacheService userCacheService;
+
     @InjectMocks
     private UserService userService;
 
@@ -28,7 +31,6 @@ public class UserServiceTest {
 
     @BeforeEach
     public void setUp() {
-        // MockitoExtension already initializes @Mock/@InjectMocks. Avoid double-initialization.
         user = new User();
         user.setId(1L);
         user.setEmail("test@example.com");
@@ -37,19 +39,19 @@ public class UserServiceTest {
     }
 
     @Test
-    void testFindById_UserExits() {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+    void testFindById_UserExists() {
+        when(userCacheService.findById(1L)).thenReturn(user);
 
         User result = userService.findById(1L);
 
         assertThat(result).isNotNull();
         assertThat(result.getEmail()).isEqualTo("test@example.com");
-        verify(userRepository).findById(1L);
+        verify(userCacheService).findById(1L);
     }
 
     @Test
     void testFindById_UserNotFound() {
-        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+        when(userCacheService.findById(1L)).thenThrow(new RuntimeException("User not found with id: '1'"));
 
         assertThatThrownBy(() -> userService.findById(1L))
                 .isInstanceOf(RuntimeException.class)
@@ -79,29 +81,31 @@ public class UserServiceTest {
 
         assertThat(result.getId()).isEqualTo(2L);
         assertThat(result.getEmail()).isEqualTo("new@example.com");
+        assertThat(result.getFirebaseUid()).isEqualTo("firebase-999");
         verify(userRepository).save(any(User.class));
     }
 
     @Test
     void testUpdateUsername_UpdatesAndSaves() {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userCacheService.findById(1L)).thenReturn(user);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         User result = userService.updateUsername(1L, "newUsername");
 
         assertThat(result.getUsername()).isEqualTo("newUsername");
+        verify(userCacheService).findById(1L);
         verify(userRepository).save(user);
     }
 
     @Test
     void testUpdateProfileUrl_UpdatesAndSaves() {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userCacheService.findById(1L)).thenReturn(user);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
-        User result = userService.updateProfileUrl(1L, "http://image.com/pic.png");
+        User result = userService.updateProfileUrl(1L, "https://example.com/profile.jpg");
 
-        assertThat(result.getProfileUrl()).isEqualTo("http://image.com/pic.png");
+        assertThat(result.getProfileUrl()).isEqualTo("https://example.com/profile.jpg");
+        verify(userCacheService).findById(1L);
         verify(userRepository).save(user);
     }
-
 }

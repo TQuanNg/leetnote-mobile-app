@@ -5,7 +5,6 @@ import com.example.leetnote_backend.config.UserPrincipal;
 import com.example.leetnote_backend.model.DTO.LeetcodeStatsDTO;
 import com.example.leetnote_backend.service.LeetcodeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,8 +20,6 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -158,13 +155,12 @@ public class LeetcodeControllerTest {
         when(leetcodeService.saveLeetcodeUsername(eq(1L), eq(username)))
                 .thenThrow(new RuntimeException("User not found: " + username));
 
-        // Act & Assert
-        assertThrows(ServletException.class, () ->
-                mockMvc.perform(post("/api/leetcode/username")
+        // Act & Assert - Expect the exception to be thrown and not handled, resulting in 500
+        mockMvc.perform(post("/api/leetcode/username")
                         .with(authenticated())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-        );
+                .andExpect(status().isInternalServerError());
     }
 
     @Test
@@ -173,10 +169,10 @@ public class LeetcodeControllerTest {
         when(leetcodeService.refreshStats(1L))
                 .thenThrow(new RuntimeException("No LeetCode profile found for user. Please set username first."));
 
-        assertThrows(ServletException.class, () ->
-                mockMvc.perform(post("/api/leetcode/refresh")
+        // Act & Assert - Expect the exception to be thrown and not handled, resulting in 500
+        mockMvc.perform(post("/api/leetcode/refresh")
                         .with(authenticated()))
-        );
+                .andExpect(status().isInternalServerError());
     }
 
     @Test
