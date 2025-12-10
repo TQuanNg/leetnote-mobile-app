@@ -1,7 +1,6 @@
 package com.example.leetnote_backend.controller;
 
 import com.example.leetnote_backend.config.UserPrincipal;
-import com.example.leetnote_backend.model.DTO.UpdateProfileRequest;
 import com.example.leetnote_backend.model.DTO.UpdateUsernameRequest;
 import com.example.leetnote_backend.model.DTO.UserProfileDTO;
 import com.example.leetnote_backend.model.entity.User;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
+
     private final UserService userService;
 
     public UserController(UserService userService) {
@@ -25,7 +25,7 @@ public class UserController {
     ) {
         Long userId = userPrincipal.getUserId();
 
-        User user = userService.findById(userId); // Still fine
+        User user = userService.findById(userId);
         UserProfileDTO dto = new UserProfileDTO(user.getId(), user.getEmail(), user.getUsername(), user.getProfileUrl());
 
         return ResponseEntity.ok(dto);
@@ -48,25 +48,5 @@ public class UserController {
         );
 
         return ResponseEntity.ok(dto);
-    }
-
-    /* unsued */
-    @PutMapping("/profile-picture")
-    public ResponseEntity<String> uploadProfilePicture(
-            @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @RequestBody UpdateProfileRequest request) {
-
-        Long userId = userPrincipal.getUserId();
-        User user = userService.updateProfileUrl(userId, request.getProfileUrl());
-        return ResponseEntity.ok(user.getProfileUrl());
-    }
-
-    @DeleteMapping("/profile-picture")
-    public ResponseEntity<Void> deleteProfilePicture(
-            @AuthenticationPrincipal UserPrincipal userPrincipal
-    ) {
-        Long userId = userPrincipal.getUserId();
-        userService.updateProfileUrl(userId, null);
-        return ResponseEntity.noContent().build();
     }
 }

@@ -5,7 +5,6 @@ import com.example.leetnote_backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -13,15 +12,15 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
     private final UserRepository userRepository;
+    private final UserCacheService userCacheService;
 
     /**
      * Find user by ID - cached for quick access
      */
-    @Cacheable(value = "users", key = "#id")
     public User findById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+        return userCacheService.findById(id);
     }
 
     public User findOrCreateUser(String firebaseUid, String email) {

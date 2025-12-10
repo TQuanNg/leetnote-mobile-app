@@ -16,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/problems")
 public class ProblemController {
+
     private final ProblemService problemService;
 
     public ProblemController(ProblemService problemService) {
@@ -42,7 +43,6 @@ public class ProblemController {
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         Long userId = userPrincipal.getUserId();
-        System.out.println("Fetching problem details for problemId: " + problemId + ", userId: " + userId);
 
         ProblemDetailDTO problemDetailDTO = problemService.getProblemDetail(problemId, userId);
         if (problemDetailDTO == null) {

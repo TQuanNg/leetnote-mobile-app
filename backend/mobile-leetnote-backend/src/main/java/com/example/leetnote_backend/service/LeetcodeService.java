@@ -1,6 +1,5 @@
 package com.example.leetnote_backend.service;
 
-import com.example.leetnote_backend.model.DTO.GraphQLResponse;
 import com.example.leetnote_backend.model.DTO.LeetcodeStatsDTO;
 import com.example.leetnote_backend.model.entity.User;
 import com.example.leetnote_backend.model.entity.UserLeetcodeProfile;
@@ -9,17 +8,15 @@ import com.example.leetnote_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class LeetcodeService {
-    private final RestTemplate restTemplate;
+
+    private final LeetcodeCacheService leetcodeApiService;
     private final UserLeetcodeProfileRepository userLeetcodeProfileRepository;
     private final UserRepository userRepository;
 
@@ -43,8 +40,8 @@ public class LeetcodeService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
-        // Fetch fresh stats from LeetCode API
-        LeetcodeStatsDTO stats = fetchStatsFromLeetcodeAPI(leetcodeUsername);
+        // Fetch fresh stats from LeetCode API (now uses separate service - caching works!)
+        LeetcodeStatsDTO stats = leetcodeApiService.fetchStatsFromLeetcodeAPI(leetcodeUsername);
 
         // Find existing profile or create new one
         UserLeetcodeProfile profile = userLeetcodeProfileRepository.findByUserId(userId)
@@ -73,8 +70,8 @@ public class LeetcodeService {
         UserLeetcodeProfile profile = userLeetcodeProfileRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("No LeetCode profile found for user. Please set username first."));
 
-        // Fetch fresh stats from LeetCode API
-        LeetcodeStatsDTO stats = fetchStatsFromLeetcodeAPI(profile.getUsername());
+        // Fetch fresh stats from LeetCode API (now uses separate service - caching works!)
+        LeetcodeStatsDTO stats = leetcodeApiService.fetchStatsFromLeetcodeAPI(profile.getUsername());
 
         // Update profile
         profile.setTotalSolved(stats.getTotalSolved());
@@ -97,64 +94,6 @@ public class LeetcodeService {
     }
 
     /**
-     * Fetch stats from LeetCode GraphQL API
-     * Cached by username for 10 minutes to avoid hitting LeetCode API too often
-     */
-    @Cacheable(value = "leetcodeApiStats", key = "#username")
-    public LeetcodeStatsDTO fetchStatsFromLeetcodeAPI(String username) {
-        String url = "https://leetcode.com/graphql";
-        String query = """
-                    query getUserProfile($username: String!) {
-                      matchedUser(username: $username) {
-                        submitStats {
-                          acSubmissionNum {
-                            difficulty
-                            count
-                            submissions
-                          }
-                        }
-                      }
-                    }
-                """;
-
-        Map<String, Object> request = Map.of(
-                "query", query,
-                "variables", Map.of("username", username)
-        );
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("User-Agent", "Mozilla/5.0");
-
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request, headers);
-
-        ResponseEntity<GraphQLResponse> response =
-                restTemplate.exchange(url, HttpMethod.POST, entity, GraphQLResponse.class);
-
-        GraphQLResponse body = response.getBody();
-
-        if (body == null || body.getData() == null || body.getData().getMatchedUser() == null) {
-            throw new RuntimeException("User not found: " + username);
-        }
-
-        // Extract stats
-        int easy = 0, medium = 0, hard = 0, total = 0;
-
-        for (GraphQLResponse.DataNode.AcSubmissionNum stat :
-                body.getData().getMatchedUser().getSubmitStats().getAcSubmissionNum()) {
-
-            switch (stat.getDifficulty().toLowerCase()) {
-                case "easy" -> easy = stat.getCount();
-                case "medium" -> medium = stat.getCount();
-                case "hard" -> hard = stat.getCount();
-                case "all" -> total = stat.getCount();
-            }
-        }
-
-        return new LeetcodeStatsDTO(username, total, easy, medium, hard);
-    }
-
-    /**
      * Convert UserLeetcodeProfile entity to DTO
      */
     private LeetcodeStatsDTO convertToDTO(UserLeetcodeProfile profile) {
@@ -167,4 +106,3 @@ public class LeetcodeService {
         );
     }
 }
-

@@ -98,8 +98,8 @@ fun SignupContent(
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF00BFA5), // teal-ish
-                        Color(0xFF1976D2)  // deep blue
+                        Color(0xFF00BFA5),
+                        Color(0xFF1976D2)
                     )
                 )
             ),

@@ -133,7 +133,6 @@ public class ProblemService {
             boolean isSolved,
             boolean isFavorite
     ) {
-        System.out.println("Updating problem status for problemId: " + problemId + ", userId: " + userId + ", isSolved: " + isSolved + ", isFavorite: " + isFavorite);
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new IllegalArgumentException("Problem not found with ID: " + problemId));
 

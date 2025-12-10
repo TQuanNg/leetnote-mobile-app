@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PromptBuilder {
     public String buildPrompt(String problemText, String pseudocode) {
+
         return String.format("""
                 You are an AI code reviewer. Evaluate the user's pseudocode for the following problem.
                 
