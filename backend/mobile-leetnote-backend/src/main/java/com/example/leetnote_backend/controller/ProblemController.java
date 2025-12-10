@@ -1,6 +1,7 @@
 package com.example.leetnote_backend.controller;
 
 import com.example.leetnote_backend.config.UserPrincipal;
+import com.example.leetnote_backend.exception.ResourceNotFoundException;
 import com.example.leetnote_backend.model.DTO.ProblemDetailDTO;
 import com.example.leetnote_backend.model.DTO.ProblemListDTO;
 import com.example.leetnote_backend.service.ProblemService;
@@ -37,16 +38,16 @@ public class ProblemController {
         return problemService.getAllProblems(userId, keyword, difficulties, isSolved, isFavorite, pageable);
     }
 
-    @GetMapping("/detail")
+    @GetMapping("/{problemId}")
     public ResponseEntity<ProblemDetailDTO> getProblemById(
-            @RequestParam Long problemId,
+            @PathVariable Long problemId,
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         Long userId = userPrincipal.getUserId();
 
         ProblemDetailDTO problemDetailDTO = problemService.getProblemDetail(problemId, userId);
         if (problemDetailDTO == null) {
-            throw new RuntimeException("Problem not found with id: " + problemId);
+            throw new ResourceNotFoundException("Problem", "id", problemId);
         }
         return ResponseEntity.ok(problemDetailDTO);
     }

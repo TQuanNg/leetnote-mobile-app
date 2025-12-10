@@ -39,9 +39,9 @@ interface LeetnoteApiService {
         @Query("size") pageSize: Int = 20
     ): PageResponse<ProblemListDTO>
 
-    @GET("problems/detail")
+    @GET("problems/{problemId}")
     suspend fun getProblemDetail(
-        @Query("problemId") problemId: Long,
+        @Path("problemId") problemId: Long,
     ): Response<ProblemDetailDTO>
 
     @PUT("problems/{problemId}/status")
@@ -51,9 +51,9 @@ interface LeetnoteApiService {
         @Query("isFavorite") isFavorite: Boolean
     ): ProblemListDTO
 
-    @GET("submissions/last")
+    @GET("submissions/{problemId}")
     suspend fun getLastSubmission(
-        @Query("problemId") problemId: Long,
+        @Path("problemId") problemId: Long,
     ): Response<SubmissionDTO.Submission>
 
     @POST("evaluations")
